@@ -4,7 +4,7 @@ from flask_cors import CORS
 import pickle
 from datetime import datetime
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='../frontend', template_folder='../frontend')
 CORS(app)
 
 # Load your ML models [cite: 10, 11]
