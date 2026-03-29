@@ -20,10 +20,10 @@ body {
   box-sizing: border-box;
 }
 
-/* 🧊 OUTER BLUR - Desktop Default */
+/* 🧊 OUTER BLUR */
 .outer-glass {
   width: auto;
-  min-width: 460px;       /* Keeps it wide and cozy on laptop */
+  min-width: 450px;       /* Keeps it wide on laptop */
   height: auto;
   max-height: 90vh;
   backdrop-filter: blur(8px);
@@ -33,19 +33,22 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 25px;
+  padding: 20px;
 }
 
-/* 📓 INNER CONTAINER - Desktop Default */
+/* 📓 INNER CONTAINER */
 .container {
-  width: 420px;           /* Your original preferred wide width */
-  height: 650px;          /* Original tall height */
+  width: 420px;           /* Original width for laptop */
+  height: auto;           /* 🔥 FIX: Allows the box to shrink to fit the buttons */
+  min-height: 400px;      /* Prevents it from being too small */
+  max-height: 650px;      /* Keeps it from getting too tall */
   background: #f5ebe0;
   border: 3px solid #6b1405;
   border-radius: 20px;
-  padding: 20px;
+  padding: 30px;
   display: flex;
   flex-direction: column;
+  justify-content: center; /* Centers login content vertically */
   overflow: hidden;
   box-shadow: 8px 8px 0px #6b1405;
   box-sizing: border-box;
@@ -53,101 +56,58 @@ body {
 
 /* ☕ TITLE & TEXT */
 h1 { text-align: center; color: #841f0e; margin-bottom: 5px; font-size: 24px; }
-p { text-align: center; color: #481403c9; margin-top: 0; font-size: 14px; }
+p { text-align: center; color: #481403c9; margin-top: 0; font-size: 14px; margin-bottom: 20px; }
 
 /* ✍️ INPUT AREA */
 .input-area {
   display: flex;
-  gap: 8px;
-  margin-bottom: 10px;
+  flex-direction: column; /* Stacked for login */
+  gap: 15px;
 }
 
 input {
-  flex: 1;
-  padding: 10px;
+  padding: 12px;
   border-radius: 8px;
   border: 2px solid #6b1405;
   background: #fff8f0;
   font-family: 'Courier New', monospace;
+  outline: none;
 }
 
-/* ⌨️ BUTTON (KEYBOARD STYLE) */
+/* ⌨️ BUTTONS */
 button {
   background: #d7ccc8;
   border: 2px solid #6b1405;
   border-radius: 8px;
-  padding: 10px 15px;
+  padding: 12px;
   cursor: pointer;
-  box-shadow: 3px 3px 0px #6b1405;
-  transition: 0.15s;
+  box-shadow: 4px 4px 0px #6b1405;
+  transition: 0.1s;
   font-family: 'Courier New', monospace;
   font-weight: bold;
+  color: #481403;
 }
 
-button:hover { transform: translateY(-2px); }
 button:active { transform: translateY(2px); box-shadow: 1px 1px 0px #6b1405; }
 
-/* 📋 TASK SECTION */
-.task-section {
-  flex: 1;
-  overflow-y: auto;
-  margin: 10px 0;
-  padding-right: 5px;
-}
-
-/* 🧾 TASK CARD */
-li {
-  background: #fff8f0;
-  margin-bottom: 10px;
-  padding: 10px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  border: 2px solid #6b1405;
-  box-shadow: 3px 3px 0px #6b1405;
-}
-
-/* ☕ COFFEE INDICATOR */
-.coffee {
-  width: 20px;
-  height: 20px;
-  border: 1.5px solid #6b1405;
-  border-radius: 4px 4px 7px 7px;
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  align-items: flex-end;
-}
-.coffee-fill { width: 100%; background: #6d4c41; transition: height 0.5s; }
-.full { height: 80%; } .half { height: 45%; } .low { height: 15%; }
-
-/* 📱 MOBILE MEDIA QUERY - Switches to Full Width on phones */
+/* 📱 MOBILE MEDIA QUERY */
 @media (max-width: 480px) {
   .outer-glass {
-    width: 100%;
-    min-width: unset;      /* Removes laptop width constraint */
-    height: 100%;
-    border: none;
-    background: transparent;
-    backdrop-filter: none;
+    width: 90%;            /* Responsive width on phone */
+    min-width: unset;      /* Removes laptop constraint */
     padding: 10px;
+    border: 3px solid #6b1405; /* Keep border on phone for style */
   }
   
   .container {
-    width: 100%;           /* Container fills phone screen */
-    max-height: 85vh;
-    padding: 15px;
+    width: 100%;           /* Fills the glass frame */
+    min-height: unset;     /* 🔥 FIX: Removes the bottom gap on phone */
+    height: auto;          /* Only as tall as the login buttons */
+    padding: 20px;
     box-shadow: 4px 4px 0px #6b1405;
   }
 
-  .input-area {
-    flex-direction: column; /* Stack inputs so they don't squish */
-  }
-
-  button {
-    width: 100%;
-  }
+  h1 { font-size: 20px; }
 }
 
 /* 🔐 AUTH HELPERS */
