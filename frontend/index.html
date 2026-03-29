@@ -1,25 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Cozy Planner ☕</title>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cozy Planner ☕</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="page-frame">
         <div class="outer-glass">
-            <div id="authSection" class="container">
-                <h1>☕ Cozy Cafe</h1>
-                <p>grab a seat and sign in</p>
-                <div class="input-area" style="flex-direction: column; gap: 10px;">
-                    <input id="username" placeholder="username">
-                    <input id="password" type="password" placeholder="password">
-                    <button onclick="handleAuth('login')">Login</button>
-                    <button onclick="handleAuth('signup')" style="background: #efebe9;">New here? Sign up</button>
-                </div>
-            </div>
-
-            <div id="mainPlanner" class="container" style="display: none;">
+            <div class="container">
                 <h1>☕ Cozy Planner</h1>
                 <p id="welcomeMsg"></p>
                 <div class="input-area">
@@ -27,15 +17,10 @@
                     <input id="deadlineInput" type="date">
                     <button onclick="addTask()">Add</button>
                 </div>
-                <div id="dayPlan" class="day-plan"></div>
                 <div class="task-section">
                     <ul id="taskList"></ul>
                 </div>
-                <div style="display: flex; gap: 5px;">
-                    <button onclick="toggleHistory()">History</button>
-                    <button onclick="logout()" style="background: #efebe9;">Logout</button>
-                </div>
-                <div id="historyList" class="history"></div>
+                <button onclick="logout()" style="background: #efebe9; margin-top: 10px;">Logout</button>
             </div>
         </div>
     </div>
