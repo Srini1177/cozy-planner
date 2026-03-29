@@ -1,19 +1,21 @@
 const API = window.location.origin;
 
 /* 🛠️ PAGE DETECTOR */
-// This runs automatically to see if we are on the login page or the planner page
 window.onload = () => {
     const user = localStorage.getItem("cozy_user");
     const isLoginPage = window.location.pathname.includes("login.html");
 
+    // If on the root "/" or empty path, decide where to send the user
+    if (window.location.pathname === "/" || window.location.pathname === "") {
+        window.location.href = user ? "index.html" : "login.html";
+        return;
+    }
+
     if (!user && !isLoginPage) {
-        // If not logged in and trying to see tasks, send to login
         window.location.href = "login.html";
     } else if (user && isLoginPage) {
-        // If already logged in and on login page, send to planner
         window.location.href = "index.html";
     } else if (user) {
-        // If logged in and on planner, load the tasks
         loadTasks();
     }
 };
@@ -22,7 +24,6 @@ window.onload = () => {
 async function handleAuth(type) {
     const userField = document.getElementById("username");
     const passField = document.getElementById("password");
-
     if (!userField || !passField) return;
 
     const user = userField.value.trim();
@@ -43,22 +44,36 @@ async function handleAuth(type) {
         const data = await res.json();
         if (res.ok) {
             localStorage.setItem("cozy_user", user);
-            window.location.href = "index.html"; // Redirect to planner
+            window.location.href = "index.html";
         } else {
             alert(data.error || "Login failed");
         }
     } catch (err) {
-        console.error("Auth error:", err);
-        alert("Server is sleeping. Try again in a minute!");
+        alert("Server error. Check your backend!");
     }
 }
 
 /* 📋 TASK MANAGEMENT */
+async function addTask() {
+    const task = document.getElementById("taskInput").value.trim();
+    const deadline = document.getElementById("deadlineInput").value;
+    const username = localStorage.getItem("cozy_user");
+
+    if (!task) return;
+
+    await fetch(API + "/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ task, deadline, username })
+    });
+
+    document.getElementById("taskInput").value = "";
+    loadTasks();
+}
+
 async function loadTasks() {
     const username = localStorage.getItem("cozy_user");
-    
-    // Update the UI with the name
-    const welcome = document.getElementById("welcomeMessage");
+    const welcome = document.getElementById("welcomeMsg");
     if (welcome) welcome.innerText = `welcome back, ${username}`;
 
     try {
@@ -81,8 +96,17 @@ async function loadTasks() {
                 </li>`;
         });
     } catch (err) {
-        console.log("Could not load tasks yet.");
+        console.log("Loading error");
     }
+}
+
+async function completeTask(id) {
+    await fetch(API + "/complete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id })
+    });
+    loadTasks();
 }
 
 function logout() {
@@ -90,13 +114,14 @@ function logout() {
     window.location.href = "login.html";
 }
 
-// Utility for coffee levels
 function getCoffeeLevel(deadline) {
     if (!deadline) return "low";
     const diff = (new Date(deadline) - new Date()) / (1000 * 60 * 60 * 24);
     return diff < 1 ? "full" : diff < 3 ? "half" : "low";
 }
 
-// Global scope for HTML buttons
+// Global scope
 window.handleAuth = handleAuth;
 window.logout = logout;
+window.addTask = addTask;
+window.completeTask = completeTask;
