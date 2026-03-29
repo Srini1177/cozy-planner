@@ -1,9 +1,14 @@
-const API = window.location.origin; // Update this after you deploy!
+const API = window.location.origin;
 
 /* 🔐 AUTHENTICATION */
 async function handleAuth(type) {
     const user = document.getElementById("username").value.trim();
     const pass = document.getElementById("password").value.trim();
+
+    if (!user || !pass) {
+        alert("Please fill in both fields ☕");
+        return;
+    }
 
     const res = await fetch(`${API}/${type}`, {
         method: "POST",
@@ -13,16 +18,18 @@ async function handleAuth(type) {
 
     const data = await res.json();
     if (res.ok) {
-        localStorage.setItem("cozy_user", data.username);
-        location.reload();
+        // Store the username so the planner knows who is logged in
+        localStorage.setItem("cozy_user", user); 
+        // Redirect to the main planner
+        window.location.href = "index.html";
     } else {
-        alert(data.error);
+        alert(data.error || "Something went wrong");
     }
 }
 
 function logout() {
     localStorage.removeItem("cozy_user");
-    location.reload();
+    window.location.href = "login.html";
 }
 
 /* 📋 TASK MANAGEMENT */
@@ -45,65 +52,53 @@ async function addTask() {
 
 async function loadTasks() {
     const username = localStorage.getItem("cozy_user");
+    if (!username) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    // Update the "Welcome" text
+    const welcomeText = document.getElementById("welcomeMessage");
+    if (welcomeText) welcomeText.innerText = `welcome back, ${username}`;
+
     const res = await fetch(`${API}/tasks?username=${username}`);
     const data = await res.json();
 
     const list = document.getElementById("taskList");
-    const history = document.getElementById("historyList");
     list.innerHTML = "";
-    history.innerHTML = "";
-    
-    document.getElementById("dayPlan").innerText = generateDayPlan(data.active);
 
     data.active.forEach((t) => {
-        const level = getCoffeeLevel(t.deadline);
+        const coffeeClass = getCoffeeLevel(t.deadline);
         list.innerHTML += `
             <li>
                 <input type="checkbox" onclick="completeTask(${t.id})">
                 <div class="task-content">
                     <b>${t.task}</b>
-                    <span>${t.deadline || "no deadline"}</span>
+                    <span>${t.deadline || 'no deadline'}</span>
                 </div>
-                <div class="coffee"><div class="coffee-fill ${level}"></div></div>
+                <div class="coffee"><div class="coffee-fill ${coffeeClass}"></div></div>
             </li>`;
     });
-
-    data.completed.forEach(t => {
-        history.innerHTML += `<div> ✔ ${t.task}</div>`;
-    });
-}
-
-async function completeTask(taskId) {
-    await fetch(API + "/complete", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: taskId })
-    });
-    loadTasks();
-}
-
-/* 🌤️ HELPERS [cite: 144, 177] */
-function generateDayPlan(tasks) {
-    return tasks.length === 0 ? "☕ add something to start your day" : `Start with "${tasks[0].task}"`;
 }
 
 function getCoffeeLevel(deadline) {
     if (!deadline) return "low";
-    const diff = (new Date(deadline) - new Date()) / (1000 * 60 * 60 * 24);
-    return diff <= 1 ? "full" : diff <= 3 ? "half" : "low";
+    const today = new Date();
+    const due = new Date(deadline);
+    const diff = (due - today) / (1000 * 60 * 60 * 24);
+    if (diff < 1) return "full";
+    if (diff < 3) return "half";
+    return "low";
 }
 
-function toggleHistory() {
-    document.getElementById("historyList").classList.toggle("show");
+async function completeTask(id) {
+    await fetch(API + "/complete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id })
+    });
+    loadTasks();
 }
 
-/* 🚀 INIT */
-window.onload = () => {
-    const user = localStorage.getItem("cozy_user");
-    if (user) {
-        document.getElementById("authSection").style.display = "none";
-        document.getElementById("mainPlanner").style.display = "block";
-        document.getElementById("welcomeMsg").innerText = `welcome back, ${user}`;
-        loadTasks();
-    }
-};
+// Initialize the page
+window.onload = loadTasks;
