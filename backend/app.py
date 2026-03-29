@@ -6,17 +6,20 @@ from flask_cors import CORS
 from datetime import datetime
 
 # Setup Flask to find the frontend folder
+# This is crucial so Render knows where your HTML/CSS/JS is located
 app = Flask(__name__, static_folder='../frontend', template_folder='../frontend')
 CORS(app)
 
 # --- 🧠 SAFE MODEL LOADING ---
 try:
+    # We use 'backend/' prefix because Render runs from the root folder
     model = pickle.load(open("backend/model.pkl", "rb"))
     vectorizer = pickle.load(open("backend/vectorizer.pkl", "rb"))
-    print("Models loaded successfully!")
+    print("Models loaded successfully! ☕")
 except Exception as e:
     print(f"Model load error: {e}. Using dummy logic for now.")
     model = None
+    vectorizer = None
 
 # --- 🗄️ DATABASE SETUP ---
 def get_db():
@@ -24,12 +27,44 @@ def get_db():
     conn.row_factory = sqlite3.Row
     return conn
 
+# Create tables if they don't exist yet
 with get_db() as db:
     db.execute('''CREATE TABLE IF NOT EXISTS users 
                   (id INTEGER PRIMARY KEY, username TEXT UNIQUE, password TEXT)''')
     db.execute('''CREATE TABLE IF NOT EXISTS tasks 
                   (id INTEGER PRIMARY KEY, username TEXT, task TEXT, 
                    deadline TEXT, createdAt TEXT, score REAL, completed INTEGER DEFAULT 0)''')
+
+# --- 🤖 PRIORITY LOGIC (AI + DEADLINES) ---
+def calculate_priority(task_text, deadline_str, created_at_str):
+    now = datetime.now()
+    
+    # 1. Calculate Deadline Urgency
+    if deadline_str:
+        try:
+            deadline = datetime.strptime(deadline_str, "%Y-%m-%d")
+            days_left = (deadline - now).days
+            # Higher score for closer deadlines (or overdue)
+            deadline_score = 1 / (days_left + 1) if days_left >= 0 else 2
+        except:
+            deadline_score = 0.5
+    else:
+        # If no deadline, score based on how long it's been in the list
+        created = datetime.strptime(created_at_str, "%Y-%m-%d")
+        days_old = (now - created).days
+        deadline_score = 0.1 + (days_old / 100)
+
+    # 2. Calculate ML Effort Score
+    if model and vectorizer:
+        vec = vectorizer.transform([task_text])
+        effort = model.predict(vec)[0]
+        # We want "Quick" tasks to have higher priority for "Easy Wins"
+        effort_map = {"quick": 1.0, "medium": 0.6, "long": 0.3}
+        effort_score = effort_map.get(effort, 0.5)
+    else:
+        effort_score = 0.5
+
+    return deadline_score + effort_score
 
 # --- 🏠 SERVE FRONTEND ---
 @app.route('/')
@@ -67,16 +102,25 @@ def login():
 def get_tasks():
     username = request.args.get("username")
     with get_db() as db:
-        active = db.execute("SELECT * FROM tasks WHERE username = ? AND completed = 0", (username,)).fetchall()
+        # Sort by the AI score (highest score first)
+        active = db.execute("SELECT * FROM tasks WHERE username = ? AND completed = 0 ORDER BY score DESC", (username,)).fetchall()
         completed = db.execute("SELECT * FROM tasks WHERE username = ? AND completed = 1", (username,)).fetchall()
-    return jsonify({"active": [dict(row) for row in active], "completed": [dict(row) for row in completed]})
+    return jsonify({
+        "active": [dict(row) for row in active], 
+        "completed": [dict(row) for row in completed]
+    })
 
 @app.route("/add", methods=["POST"])
 def add_task():
     data = request.json
+    created_at = datetime.now().strftime("%Y-%m-%d")
+    
+    # Calculate priority before saving to the database
+    score = calculate_priority(data["task"], data.get("deadline"), created_at)
+    
     with get_db() as db:
-        db.execute("INSERT INTO tasks (username, task, deadline) VALUES (?,?,?)",
-                   (data["username"], data["task"], data.get("deadline")))
+        db.execute("INSERT INTO tasks (username, task, deadline, createdAt, score) VALUES (?,?,?,?,?)",
+                   (data["username"], data["task"], data.get("deadline"), created_at, score))
     return jsonify({"message": "Added"})
 
 @app.route("/complete", methods=["POST"])
