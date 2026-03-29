@@ -1,24 +1,29 @@
 import sqlite3
-from flask import Flask, request, jsonify
-from flask_cors import CORS
+import os
 import pickle
+from flask import Flask, request, jsonify, send_from_directory
+from flask_cors import CORS
 from datetime import datetime
 
+# Setup Flask to find the frontend folder
 app = Flask(__name__, static_folder='../frontend', template_folder='../frontend')
 CORS(app)
 
-# Load your ML models [cite: 10, 11]
-# Load your ML models with correct folder paths
-model = pickle.load(open("backend/model.pkl", "rb"))
-vectorizer = pickle.load(open("backend/vectorizer.pkl", "rb"))
+# --- 🧠 SAFE MODEL LOADING ---
+try:
+    model = pickle.load(open("backend/model.pkl", "rb"))
+    vectorizer = pickle.load(open("backend/vectorizer.pkl", "rb"))
+    print("Models loaded successfully!")
+except Exception as e:
+    print(f"Model load error: {e}. Using dummy logic for now.")
+    model = None
 
-# --- DATABASE SETUP ---
+# --- 🗄️ DATABASE SETUP ---
 def get_db():
     conn = sqlite3.connect('cozy_cafe.db')
     conn.row_factory = sqlite3.Row
     return conn
 
-# Initialize tables
 with get_db() as db:
     db.execute('''CREATE TABLE IF NOT EXISTS users 
                   (id INTEGER PRIMARY KEY, username TEXT UNIQUE, password TEXT)''')
@@ -26,24 +31,16 @@ with get_db() as db:
                   (id INTEGER PRIMARY KEY, username TEXT, task TEXT, 
                    deadline TEXT, createdAt TEXT, score REAL, completed INTEGER DEFAULT 0)''')
 
-# --- ML PRIORITY LOGIC [cite: 23-42] ---
-def calculate_priority(task_text, deadline_str, created_at_str):
-    now = datetime.now()
-    if deadline_str:
-        deadline = datetime.strptime(deadline_str, "%Y-%m-%d")
-        days_left = (deadline - now).days
-        deadline_score = 1 / (days_left + 1) if days_left >= 0 else 2
-    else:
-        created = datetime.strptime(created_at_str, "%Y-%m-%d")
-        days_old = (now - created).days
-        deadline_score = 0.1 + (days_old / 100)
+# --- 🏠 SERVE FRONTEND ---
+@app.route('/')
+def index():
+    return send_from_directory(app.static_folder, 'index.html')
 
-    vec = vectorizer.transform([task_text])
-    effort = model.predict(vec)[0]
-    effort_map = {"quick": 1.0, "medium": 0.6, "long": 0.3}
-    return deadline_score + effort_map[effort]
+@app.route('/<path:path>')
+def serve_static(path):
+    return send_from_directory(app.static_folder, path)
 
-# --- ROUTES ---
+# --- ☕ AUTH ROUTES ---
 @app.route("/signup", methods=["POST"])
 def signup():
     data = request.json
@@ -65,35 +62,29 @@ def login():
         return jsonify({"message": "Logged in", "username": user['username']})
     return jsonify({"error": "Invalid login"}), 401
 
-@app.route("/add", methods=["POST"])
-def add_task():
-    data = request.json
-    created_at = datetime.now().strftime("%Y-%m-%d")
-    score = calculate_priority(data["task"], data.get("deadline"), created_at)
-    
-    with get_db() as db:
-        db.execute("INSERT INTO tasks (username, task, deadline, createdAt, score) VALUES (?,?,?,?,?)",
-                   (data["username"], data["task"], data.get("deadline"), created_at, score))
-    return jsonify({"message": "Task added"})
-
+# --- ✅ TASK ROUTES ---
 @app.route("/tasks", methods=["GET"])
 def get_tasks():
     username = request.args.get("username")
     with get_db() as db:
-        active = db.execute("SELECT * FROM tasks WHERE username = ? AND completed = 0 ORDER BY score DESC", (username,)).fetchall()
+        active = db.execute("SELECT * FROM tasks WHERE username = ? AND completed = 0", (username,)).fetchall()
         completed = db.execute("SELECT * FROM tasks WHERE username = ? AND completed = 1", (username,)).fetchall()
-    
-    return jsonify({
-        "active": [dict(row) for row in active],
-        "completed": [dict(row) for row in completed]
-    })
+    return jsonify({"active": [dict(row) for row in active], "completed": [dict(row) for row in completed]})
+
+@app.route("/add", methods=["POST"])
+def add_task():
+    data = request.json
+    with get_db() as db:
+        db.execute("INSERT INTO tasks (username, task, deadline) VALUES (?,?,?)",
+                   (data["username"], data["task"], data.get("deadline")))
+    return jsonify({"message": "Added"})
 
 @app.route("/complete", methods=["POST"])
 def complete_task():
     task_id = request.json["id"]
     with get_db() as db:
         db.execute("UPDATE tasks SET completed = 1 WHERE id = ?", (task_id,))
-    return jsonify({"message": "Task completed"})
+    return jsonify({"message": "Done"})
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
