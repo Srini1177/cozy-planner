@@ -8,8 +8,9 @@ app = Flask(__name__, static_folder='../frontend', template_folder='../frontend'
 CORS(app)
 
 # Load your ML models [cite: 10, 11]
-model = pickle.load(open("model.pkl", "rb"))
-vectorizer = pickle.load(open("vectorizer.pkl", "rb"))
+# Load your ML models with correct folder paths
+model = pickle.load(open("backend/model.pkl", "rb"))
+vectorizer = pickle.load(open("backend/vectorizer.pkl", "rb"))
 
 # --- DATABASE SETUP ---
 def get_db():
