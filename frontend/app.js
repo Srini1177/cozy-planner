@@ -1,29 +1,87 @@
 const API = window.location.origin;
 
+/* 🛠️ PAGE DETECTOR */
+// This runs automatically to see if we are on the login page or the planner page
+window.onload = () => {
+    const user = localStorage.getItem("cozy_user");
+    const isLoginPage = window.location.pathname.includes("login.html");
+
+    if (!user && !isLoginPage) {
+        // If not logged in and trying to see tasks, send to login
+        window.location.href = "login.html";
+    } else if (user && isLoginPage) {
+        // If already logged in and on login page, send to planner
+        window.location.href = "index.html";
+    } else if (user) {
+        // If logged in and on planner, load the tasks
+        loadTasks();
+    }
+};
+
 /* 🔐 AUTHENTICATION */
 async function handleAuth(type) {
-    const user = document.getElementById("username").value.trim();
-    const pass = document.getElementById("password").value.trim();
+    const userField = document.getElementById("username");
+    const passField = document.getElementById("password");
+
+    if (!userField || !passField) return;
+
+    const user = userField.value.trim();
+    const pass = passField.value.trim();
 
     if (!user || !pass) {
-        alert("Please fill in both fields ☕");
+        alert("Fill in the blanks! ☕");
         return;
     }
 
-    const res = await fetch(`${API}/${type}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: user, password: pass })
-    });
+    try {
+        const res = await fetch(`${API}/${type}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: user, password: pass })
+        });
 
-    const data = await res.json();
-    if (res.ok) {
-        // Store the username so the planner knows who is logged in
-        localStorage.setItem("cozy_user", user); 
-        // Redirect to the main planner
-        window.location.href = "index.html";
-    } else {
-        alert(data.error || "Something went wrong");
+        const data = await res.json();
+        if (res.ok) {
+            localStorage.setItem("cozy_user", user);
+            window.location.href = "index.html"; // Redirect to planner
+        } else {
+            alert(data.error || "Login failed");
+        }
+    } catch (err) {
+        console.error("Auth error:", err);
+        alert("Server is sleeping. Try again in a minute!");
+    }
+}
+
+/* 📋 TASK MANAGEMENT */
+async function loadTasks() {
+    const username = localStorage.getItem("cozy_user");
+    
+    // Update the UI with the name
+    const welcome = document.getElementById("welcomeMessage");
+    if (welcome) welcome.innerText = `welcome back, ${username}`;
+
+    try {
+        const res = await fetch(`${API}/tasks?username=${username}`);
+        const data = await res.json();
+        const list = document.getElementById("taskList");
+        if (!list) return;
+
+        list.innerHTML = "";
+        data.active.forEach(t => {
+            const level = getCoffeeLevel(t.deadline);
+            list.innerHTML += `
+                <li>
+                    <input type="checkbox" onclick="completeTask(${t.id})">
+                    <div class="task-content">
+                        <b>${t.task}</b>
+                        <span>${t.deadline || 'No deadline'}</span>
+                    </div>
+                    <div class="coffee"><div class="coffee-fill ${level}"></div></div>
+                </li>`;
+        });
+    } catch (err) {
+        console.log("Could not load tasks yet.");
     }
 }
 
@@ -32,73 +90,13 @@ function logout() {
     window.location.href = "login.html";
 }
 
-/* 📋 TASK MANAGEMENT */
-async function addTask() {
-    const task = document.getElementById("taskInput").value.trim();
-    const deadline = document.getElementById("deadlineInput").value;
-    const username = localStorage.getItem("cozy_user");
-
-    if (!task) return;
-
-    await fetch(API + "/add", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ task, deadline, username })
-    });
-
-    document.getElementById("taskInput").value = "";
-    loadTasks();
-}
-
-async function loadTasks() {
-    const username = localStorage.getItem("cozy_user");
-    if (!username) {
-        window.location.href = "login.html";
-        return;
-    }
-
-    // Update the "Welcome" text
-    const welcomeText = document.getElementById("welcomeMessage");
-    if (welcomeText) welcomeText.innerText = `welcome back, ${username}`;
-
-    const res = await fetch(`${API}/tasks?username=${username}`);
-    const data = await res.json();
-
-    const list = document.getElementById("taskList");
-    list.innerHTML = "";
-
-    data.active.forEach((t) => {
-        const coffeeClass = getCoffeeLevel(t.deadline);
-        list.innerHTML += `
-            <li>
-                <input type="checkbox" onclick="completeTask(${t.id})">
-                <div class="task-content">
-                    <b>${t.task}</b>
-                    <span>${t.deadline || 'no deadline'}</span>
-                </div>
-                <div class="coffee"><div class="coffee-fill ${coffeeClass}"></div></div>
-            </li>`;
-    });
-}
-
+// Utility for coffee levels
 function getCoffeeLevel(deadline) {
     if (!deadline) return "low";
-    const today = new Date();
-    const due = new Date(deadline);
-    const diff = (due - today) / (1000 * 60 * 60 * 24);
-    if (diff < 1) return "full";
-    if (diff < 3) return "half";
-    return "low";
+    const diff = (new Date(deadline) - new Date()) / (1000 * 60 * 60 * 24);
+    return diff < 1 ? "full" : diff < 3 ? "half" : "low";
 }
 
-async function completeTask(id) {
-    await fetch(API + "/complete", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id })
-    });
-    loadTasks();
-}
-
-// Initialize the page
-window.onload = loadTasks;
+// Global scope for HTML buttons
+window.handleAuth = handleAuth;
+window.logout = logout;
