@@ -7,7 +7,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden; /* Prevents double scrollbars */
+  overflow: hidden;
 }
 
 /* 🪟 PAGE FRAME */
@@ -18,14 +18,13 @@ body {
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
-  padding: 10px; /* Small padding so container doesn't touch screen edges on mobile */
 }
 
-/* 🧊 OUTER BLUR */
+/* 🧊 OUTER BLUR - Desktop Default */
 .outer-glass {
-  width: 100%;
-  height: 100%;
-  max-width: 500px; /* Limits the blur area for a cleaner look */
+  width: auto;
+  min-width: 460px;       /* Keeps it wide and cozy on laptop */
+  height: auto;
   max-height: 90vh;
   backdrop-filter: blur(8px);
   background: rgba(255, 248, 240, 0.2);
@@ -34,15 +33,13 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 10px;
+  padding: 25px;
 }
 
-/* 📓 INNER CONTAINER */
+/* 📓 INNER CONTAINER - Desktop Default */
 .container {
-  width: 100%;           /* Responsive width */
-  max-width: 400px;      /* Desktop cap */
-  height: 100%;
-  max-height: 650px;     /* Keeps it from getting too tall */
+  width: 420px;           /* Your original preferred wide width */
+  height: 650px;          /* Original tall height */
   background: #f5ebe0;
   border: 3px solid #6b1405;
   border-radius: 20px;
@@ -50,7 +47,7 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: 6px 6px 0px #6b1405;
+  box-shadow: 8px 8px 0px #6b1405;
   box-sizing: border-box;
 }
 
@@ -58,7 +55,7 @@ body {
 h1 { text-align: center; color: #841f0e; margin-bottom: 5px; font-size: 24px; }
 p { text-align: center; color: #481403c9; margin-top: 0; font-size: 14px; }
 
-/* ✍️ INPUT AREA (Responsive stacking) */
+/* ✍️ INPUT AREA */
 .input-area {
   display: flex;
   gap: 8px;
@@ -98,10 +95,6 @@ button:active { transform: translateY(2px); box-shadow: 1px 1px 0px #6b1405; }
   padding-right: 5px;
 }
 
-/* 📜 CUSTOM SCROLLBAR (Cozy Style) */
-.task-section::-webkit-scrollbar { width: 6px; }
-.task-section::-webkit-scrollbar-thumb { background: #6b1405; border-radius: 10px; }
-
 /* 🧾 TASK CARD */
 li {
   background: #fff8f0;
@@ -114,10 +107,6 @@ li {
   border: 2px solid #6b1405;
   box-shadow: 3px 3px 0px #6b1405;
 }
-
-.task-content { flex: 1; display: flex; flex-direction: column; }
-.task-content b { color: #6b1405; font-size: 14px; }
-.task-content span { color: #8d6e63; font-size: 11px; }
 
 /* ☕ COFFEE INDICATOR */
 .coffee {
@@ -133,28 +122,33 @@ li {
 .coffee-fill { width: 100%; background: #6d4c41; transition: height 0.5s; }
 .full { height: 80%; } .half { height: 45%; } .low { height: 15%; }
 
-/* 📱 MOBILE MEDIA QUERY */
+/* 📱 MOBILE MEDIA QUERY - Switches to Full Width on phones */
 @media (max-width: 480px) {
   .outer-glass {
+    width: 100%;
+    min-width: unset;      /* Removes laptop width constraint */
+    height: 100%;
     border: none;
     background: transparent;
     backdrop-filter: none;
+    padding: 10px;
   }
   
   .container {
-    max-height: 85vh; /* Gives more room for the keyboard on mobile */
+    width: 100%;           /* Container fills phone screen */
+    max-height: 85vh;
     padding: 15px;
+    box-shadow: 4px 4px 0px #6b1405;
   }
 
   .input-area {
-    flex-direction: column; /* Stacks Add task and Date */
+    flex-direction: column; /* Stack inputs so they don't squish */
   }
 
   button {
-    width: 100%; /* Makes buttons easier to tap */
+    width: 100%;
   }
 }
 
 /* 🔐 AUTH HELPERS */
 #mainPlanner { display: none; }
-.auth-container { display: flex; flex-direction: column; gap: 10px; }
