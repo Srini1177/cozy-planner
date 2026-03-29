@@ -1,4 +1,3 @@
-/* 🌄 CAFE BACKGROUND */
 body {
   margin: 0;
   font-family: 'Courier New', monospace;
@@ -10,10 +9,17 @@ body {
   overflow: hidden;
 }
 
-/* 🧊 OUTER BLUR - Large on Laptop */
+.page-frame {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .outer-glass {
   width: auto;
-  min-width: 480px;        /* Wide desktop feel */
+  min-width: 480px;
   height: auto;
   max-height: 92vh;
   backdrop-filter: blur(10px);
@@ -24,12 +30,10 @@ body {
   justify-content: center;
   align-items: center;
   padding: 30px;
-  box-sizing: border-box;
 }
 
-/* 📓 INNER CONTAINER */
 .container {
-  width: 420px;            /* Fixed width for laptop */
+  width: 420px;
   height: auto;
   min-height: 400px;
   max-height: 700px;
@@ -41,15 +45,13 @@ body {
   flex-direction: column;
   box-shadow: 10px 10px 0px #6b1405;
   box-sizing: border-box;
-  gap: 10px;               /* Adds space between header, inputs, and list */
 }
 
-/* ✍️ INPUT AREA (Prevents Overlap) */
 .input-area {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-bottom: 10px;     /* Forces a gap before the task list starts */
+  margin-bottom: 15px; /* Creates space so the list doesn't overlap */
 }
 
 input {
@@ -60,37 +62,25 @@ input {
   font-family: 'Courier New', monospace;
 }
 
-/* 📋 TASK SECTION (Scrollable) */
 .task-section {
-  flex: 1;                 /* Takes remaining space */
-  overflow-y: auto;        /* Scrollable tasks */
-  margin-top: 10px;
+  flex: 1;
+  overflow-y: auto;
   padding-right: 5px;
 }
 
-/* 📱 MOBILE VIEW */
 @media (max-width: 480px) {
   .outer-glass {
-    width: 95%;            /* Small width on phone */
-    min-width: unset;      /* Removes desktop width */
-    padding: 10px;
+    width: 95%;
+    min-width: unset;
+    padding: 15px;
     backdrop-filter: blur(5px);
-    border: 2px solid #6b1405;
   }
-  
   .container {
     width: 100%;
-    max-height: 85vh;      /* Fits within phone screen */
-    padding: 15px;
-    box-shadow: 4px 4px 0px #6b1405;
-  }
-
-  .input-area button {
-    margin-bottom: 5px;    /* Extra space for overlapping buttons */
+    padding: 20px;
   }
 }
 
-/* ⌨️ BUTTONS */
 button {
   background: #d7ccc8;
   border: 2px solid #6b1405;
@@ -99,11 +89,11 @@ button {
   cursor: pointer;
   box-shadow: 4px 4px 0px #6b1405;
   font-weight: bold;
+  transition: 0.1s;
 }
 
 button:active { transform: translateY(2px); box-shadow: 1px 1px 0px #6b1405; }
 
-/* 🧾 TASK CARD */
 li {
   background: #fff8f0;
   margin-bottom: 12px;
@@ -116,7 +106,10 @@ li {
   box-shadow: 3px 3px 0px #6b1405;
 }
 
-/* ☕ COFFEE */
+.task-content { flex: 1; }
+.task-content b { color: #6b1405; display: block; }
+.task-content span { font-size: 11px; color: #8d6e63; }
+
 .coffee { width: 22px; height: 22px; border: 1.5px solid #6b1405; border-radius: 5px; position: relative; overflow: hidden; display: flex; align-items: flex-end; margin-left: auto; }
 .coffee-fill { width: 100%; background: #6d4c41; transition: height 0.5s; }
 .full { height: 85%; } .half { height: 45%; } .low { height: 15%; }
