@@ -1,83 +1,77 @@
-/* 🌄 BACKGROUND IMAGE */
 /* 🌄 CAFE BACKGROUND */
 body {
   margin: 0;
   font-family: 'Courier New', monospace;
   height: 100vh;
-
   background: url('bg.png') no-repeat center/cover;
-
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: hidden; /* Prevents double scrollbars */
 }
+
 /* 🪟 PAGE FRAME */
 .page-frame {
-  width: 95%;
-  height: 95%;
-  border: 4px solid #6b1405;
-  border-radius: 20px;
-  padding: 20px;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   box-sizing: border-box;
+  padding: 10px; /* Small padding so container doesn't touch screen edges on mobile */
 }
 
 /* 🧊 OUTER BLUR */
 .outer-glass {
   width: 100%;
   height: 100%;
-  backdrop-filter: blur(5px);
-  background: rgba(255, 248, 240, 0.3);
+  max-width: 500px; /* Limits the blur area for a cleaner look */
+  max-height: 90vh;
+  backdrop-filter: blur(8px);
+  background: rgba(255, 248, 240, 0.2);
   border: 4px solid #6b1405;
-  border-radius: 20px;
-
+  border-radius: 25px;
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 10px;
 }
 
 /* 📓 INNER CONTAINER */
 .container {
-  width: 420px;
-  max-height: 620px;
-
+  width: 100%;           /* Responsive width */
+  max-width: 400px;      /* Desktop cap */
+  height: 100%;
+  max-height: 650px;     /* Keeps it from getting too tall */
   background: #f5ebe0;
   border: 3px solid #6b1405;
   border-radius: 20px;
-
   padding: 20px;
-
   display: flex;
   flex-direction: column;
   overflow: hidden;
-
   box-shadow: 6px 6px 0px #6b1405;
+  box-sizing: border-box;
 }
 
-/* ☕ TITLE */
-h1 {
-  text-align: center;
-  color: #841f0e;
-}
+/* ☕ TITLE & TEXT */
+h1 { text-align: center; color: #841f0e; margin-bottom: 5px; font-size: 24px; }
+p { text-align: center; color: #481403c9; margin-top: 0; font-size: 14px; }
 
-/* 🌿 TEXT */
-p {
-  text-align: center;
-  color: #481403c9;
-  margin-top: -10px;
-}
-
-/* ✍️ INPUT */
+/* ✍️ INPUT AREA (Responsive stacking) */
 .input-area {
   display: flex;
-  gap: 6px;
+  gap: 8px;
+  margin-bottom: 10px;
 }
 
 input {
   flex: 1;
-  padding: 8px;
+  padding: 10px;
   border-radius: 8px;
   border: 2px solid #6b1405;
   background: #fff8f0;
+  font-family: 'Courier New', monospace;
 }
 
 /* ⌨️ BUTTON (KEYBOARD STYLE) */
@@ -85,211 +79,82 @@ button {
   background: #d7ccc8;
   border: 2px solid #6b1405;
   border-radius: 8px;
-  padding: 8px;
+  padding: 10px 15px;
   cursor: pointer;
-
   box-shadow: 3px 3px 0px #6b1405;
   transition: 0.15s;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
 }
 
-button:hover {
-  transform: translateY(-2px);
-}
-
-button:active {
-  transform: translateY(2px);
-  box-shadow: 1px 1px 0px #6b1405;
-}
-
-/* 🌤️ DAY PLAN */
-.day-plan {
-  background: #efebe9;
-  border: 2px solid #6b1405;
-  border-radius: 10px;
-  padding: 8px;
-  margin: 10px 0;
-}
+button:hover { transform: translateY(-2px); }
+button:active { transform: translateY(2px); box-shadow: 1px 1px 0px #6b1405; }
 
 /* 📋 TASK SECTION */
 .task-section {
   flex: 1;
   overflow-y: auto;
+  margin: 10px 0;
+  padding-right: 5px;
 }
 
-/* 📦 LIST */
-ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-/* background: #d7ccc8;
-  border: 2px solid #6b1405;
-  border-radius: 8px;
-  padding: 8px;
-  cursor: pointer;
+/* 📜 CUSTOM SCROLLBAR (Cozy Style) */
+.task-section::-webkit-scrollbar { width: 6px; }
+.task-section::-webkit-scrollbar-thumb { background: #6b1405; border-radius: 10px; }
 
-  box-shadow: 3px 3px 0px #6b1405;
-  transition: 0.15s; */
 /* 🧾 TASK CARD */
 li {
   background: #fff8f0;
-  margin: 8px 3px;
-  padding: 8px;
+  margin-bottom: 10px;
+  padding: 10px;
   border-radius: 8px;
-
   display: flex;
   align-items: center;
   gap: 10px;
-
   border: 2px solid #6b1405;
-
   box-shadow: 3px 3px 0px #6b1405;
-  transition: 0.15s;
 }
 
-li:hover {
-  transform: translateY(-2px);
-}
-
-/* 📦 CONTENT */
-.task-content {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  flex: 1;
-}
-
-/* ☕ TEXT */
-.task-content b {
-  color: #6b1405;
-}
-
-.task-content span {
-  color: #6b1405;
-  font-size: 12px;
-}
-
-/* ✅ CHECKBOX */
-input[type="checkbox"] {
-  transform: scale(1.2);
-  margin-top: 2px;
-}
-
-/* 📜 HISTORY */
-.history {
-  display: none;
-}
-
-.history.show {
-  display: block;
-}
+.task-content { flex: 1; display: flex; flex-direction: column; }
+.task-content b { color: #6b1405; font-size: 14px; }
+.task-content span { color: #8d6e63; font-size: 11px; }
 
 /* ☕ COFFEE INDICATOR */
-/* ☕ COFFEE CONTAINER (RIGHT SIDE) */
 .coffee {
-  margin-left: auto;
   width: 20px;
   height: 20px;
-
-  border: 1.5px solid rgba(78, 52, 46, 0.8);
-  border-radius: 5px 5px 8px 8px;
-
+  border: 1.5px solid #6b1405;
+  border-radius: 4px 4px 7px 7px;
   position: relative;
-
-  background: rgba(255, 255, 255, 0.25); /* glass */
-  backdrop-filter: blur(4px);
-
+  overflow: hidden;
   display: flex;
   align-items: flex-end;
-  justify-content: center;
-
-  overflow: hidden; /* 🔥 keeps steam inside */
 }
+.coffee-fill { width: 100%; background: #6d4c41; transition: height 0.5s; }
+.full { height: 80%; } .half { height: 45%; } .low { height: 15%; }
 
-/* ☕ HANDLE (SMALLER + SOFT) */
-.coffee::after {
-  content: "";
-  position: absolute;
-  right: -5px;
-  top: 5px;
-
-  width: 5px;
-  height: 7px;
-
-  border: 1.5px solid rgba(78, 52, 46, 0.8);
-  border-left: none;
-  border-radius: 0 5px 5px 0;
-}
-
-/* ☕ COFFEE LIQUID */
-.coffee-fill {
-  width: 100%;
-  background: linear-gradient(#6d4c41, #3e2723);
-  border-radius: 0 0 5px 5px;
-  transition: height 0.3s ease;
-}
-
-/* ☕ LEVELS */
-.full { height: 75%; }
-.half { height: 45%; }
-.low  { height: 20%; }
-
-/* ☁️ STEAM (CONTAINED) */
-.coffee::before {
-  content: "☁️";
-  position: absolute;
-  top: -4px;
-  font-size: 8px;
-  opacity: 0.9;
-
-  animation: steam 2s infinite ease-in-out;
-}
-
-/* 🌫️ STEAM ANIMATION */
-@keyframes steam {
-  0% {
-    transform: translateY(2px);
-    opacity: 0.3;
-  }
-  50% {
-    transform: translateY(-4px);
-    opacity: 0.8;
-  }
-  100% {
-    transform: translateY(-6px);
-    opacity: 0;
-  }
-}
-/* 🔑  AUTH SPECIFIC STYLES */
-.auth-container {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin-top: 20px;
-}
-
-.auth-toggle {
-    background: none;
+/* 📱 MOBILE MEDIA QUERY */
+@media (max-width: 480px) {
+  .outer-glass {
     border: none;
-    box-shadow: none;
-    text-decoration: underline;
-    color: #841f0e;
-    font-size: 14px;
-    margin-top: 10px;
+    background: transparent;
+    backdrop-filter: none;
+  }
+  
+  .container {
+    max-height: 85vh; /* Gives more room for the keyboard on mobile */
+    padding: 15px;
+  }
+
+  .input-area {
+    flex-direction: column; /* Stacks Add task and Date */
+  }
+
+  button {
+    width: 100%; /* Makes buttons easier to tap */
+  }
 }
 
-.auth-toggle:hover {
-    transform: none;
-    cursor: pointer;
-}
-
-/* Ensure inputs in auth are easy to read */
-.auth-container input {
-    width: 90%;
-    align-self: center;
-}
-
-/* Hide the main planner until logged in */
-#mainPlanner {
-    display: none;
-}
+/* 🔐 AUTH HELPERS */
+#mainPlanner { display: none; }
+.auth-container { display: flex; flex-direction: column; gap: 10px; }
