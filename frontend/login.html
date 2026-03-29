@@ -1,14 +1,24 @@
-<div class="page-frame">
-    <div class="outer-glass">
-        <div class="container login-card">
-            <h1>☕ Welcome Back</h1>
-            <p>grab a seat and sign in</p>
-            <div class="input-area" style="flex-direction: column; gap: 15px;">
-                <input id="userIn" placeholder="username">
-                <input id="passIn" type="password" placeholder="password">
-                <button onclick="handleAuth('login')">Login</button>
-                <button onclick="handleAuth('signup')" style="background: #efebe9;">New here? Sign up</button>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cozy Cafe - Login ☕</title>
+    <link rel="stylesheet" href="style.css"> </head>
+<body>
+    <div class="page-frame">
+        <div class="outer-glass">
+            <div class="container login-card">
+                <h1>☕ Welcome Back</h1>
+                <p>grab a seat and sign in</p>
+                <div class="input-area" style="flex-direction: column; gap: 15px;">
+                    <input id="username" placeholder="username">
+                    <input id="password" type="password" placeholder="password">
+                    <button onclick="handleAuth('login')">Login</button>
+                    <button onclick="handleAuth('signup')" style="background: #efebe9;">New here? Sign up</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
+    <script src="app.js"></script> </body>
+</html>
