@@ -20,7 +20,14 @@
                 <div class="task-section">
                     <ul id="taskList"></ul>
                 </div>
-                <button onclick="logout()" style="background: #efebe9; margin-top: 10px;">Logout</button>
+                <div id="historySection" class="history">
+                <p style="font-size: 12px; font-weight: bold; color: #6b1405; text-align: left;">📜 Finished Brews</p>
+                <div id="historyList"></div>
+                </div>
+                <div class="button-row">
+                    <button onclick="toggleHistory()">History</button>
+                    <button onclick="logout()" class="logout-btn">Logout</button>
+                </div>
             </div>
         </div>
     </div>
