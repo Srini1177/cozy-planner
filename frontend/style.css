@@ -10,7 +10,7 @@ body {
   overflow: hidden;
 }
 
-/* 🪟 PAGE FRAME - Large border for laptop */
+/* 🪟 PAGE FRAME - 95% Border */
 .page-frame {
   width: 95%;
   height: 95%;
@@ -37,81 +37,93 @@ body {
   box-sizing: border-box;
 }
 
-/* 📓 INNER CONTAINER */
+/* 📓 INNER CONTAINER - Centered Content */
 .container {
   width: 420px;
-  max-height: 90%;
+  max-height: 92%;
   background: #f5ebe0;
   border: 3px solid #6b1405;
   border-radius: 20px;
-  padding: 25px;
+  padding: 30px;
   display: flex;
   flex-direction: column;
+  align-items: stretch;    /* 🔥 Ensures inputs/lists fill the width */
   box-shadow: 8px 8px 0px #6b1405;
   box-sizing: border-box;
-  overflow: hidden; /* Header stays fixed */
+  overflow: hidden;
 }
 
-/* 📋 SCROLLABLE TASK SECTION */
+/* 📋 HEADER ALIGNMENT */
+h1 { text-align: center; color: #841f0e; margin: 0; font-size: 24px; }
+#welcomeMsg { text-align: center; color: #481403c9; font-size: 14px; margin-bottom: 15px; }
+
+/* ✍️ INPUT AREA ALIGNMENT */
+.input-area {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;             /* 🔥 Ensures input doesn't shrink */
+}
+
+input {
+  padding: 12px;
+  border-radius: 8px;
+  border: 2px solid #6b1405;
+  background: #fff8f0;
+  font-family: inherit;
+  width: 100%;             /* 🔥 Fixes alignment within container */
+  box-sizing: border-box;
+}
+
+/* 📋 TASK LIST ALIGNMENT */
 .task-section {
   flex: 1;
   overflow-y: auto;
-  margin-top: 10px;
+  margin: 15px 0;
 }
 
-/* ☕ TITLE & TEXT */
-h1 { text-align: center; color: #841f0e; margin: 0; }
-p { text-align: center; color: #481403c9; margin-top: -5px; font-size: 14px; }
-
-/* 📋 LIST ALIGNMENT */
-ul { list-style: none; padding: 0; margin: 0; }
+ul { list-style: none; padding: 0; margin: 0; width: 100%; }
 
 li {
   background: #fff8f0;
-  margin-bottom: 12px;
-  padding: 10px;
+  margin-bottom: 10px;
+  padding: 12px;
   border-radius: 8px;
   display: flex;
-  align-items: center; /* Centering checkbox, text, and cup */
+  align-items: center;     /* 🔥 Vertical alignment for checkbox and cup */
   border: 2px solid #6b1405;
   box-shadow: 4px 4px 0px #6b1405;
 }
 
 .task-content {
   flex: 1;
-  margin: 0 12px;
-  display: flex;
-  flex-direction: column;
+  margin: 0 15px;
 }
 
-.task-content b { color: #6b1405; font-size: 14px; }
-.task-content span { color: #8d6e63; font-size: 11px; }
-
-/* ☁️ STEAM & CUP (Original Logic) */
+/* ☁️ STEAM & CUP */
 .coffee-wrapper {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   width: 30px;
-  height: 30px;
+  height: 35px;
+  display: flex;
+  justify-content: center;
 }
 
 .steam {
   position: absolute;
-  top: -6px;
+  top: 0;
   font-size: 10px;
   animation: steam-float 2s infinite ease-in-out;
 }
 
 @keyframes steam-float {
-  0% { transform: translateY(2px); opacity: 0; }
-  50% { transform: translateY(-4px); opacity: 0.8; }
-  100% { transform: translateY(-10px); opacity: 0; }
+  0% { transform: translateY(5px); opacity: 0; }
+  50% { transform: translateY(-2px); opacity: 0.8; }
+  100% { transform: translateY(-12px); opacity: 0; }
 }
 
 .coffee {
-  width: 20px;
+  width: 22px;
   height: 18px;
   border: 1.5px solid #6b1405;
   border-radius: 2px 2px 8px 8px;
@@ -123,32 +135,16 @@ li {
 }
 
 .coffee-fill { width: 100%; background: #6d4c41; transition: height 0.5s; }
-.full { height: 80%; } .half { height: 45%; } .low { height: 15%; }
+.full { height: 85%; } .half { height: 45%; } .low { height: 15%; }
 
-/* 📜 HISTORY */
-.history {
-  display: none;
-  margin-top: 15px;
-  border-top: 2px dashed #6b1405;
-  padding-top: 10px;
-  max-height: 120px;
-  overflow-y: auto;
+/* ⌨️ BUTTON ROW ALIGNMENT */
+.button-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  width: 100%;
 }
 
-.history.show { display: block; }
-
-.history-item {
-  background: #efebe9;
-  padding: 6px;
-  margin-bottom: 4px;
-  border-radius: 5px;
-  font-size: 12px;
-  text-decoration: line-through;
-  opacity: 0.6;
-}
-
-/* ⌨️ BUTTONS */
-.button-row { display: flex; gap: 8px; margin-top: 10px; }
 button {
   flex: 1;
   background: #d7ccc8;
@@ -157,14 +153,14 @@ button {
   padding: 10px;
   cursor: pointer;
   box-shadow: 4px 4px 0px #6b1405;
-  font-family: 'Courier New', monospace;
   font-weight: bold;
 }
+
 button:active { transform: translateY(2px); box-shadow: 1px 1px 0px #6b1405; }
 
 /* 📱 MOBILE RESPONSIVENESS */
 @media (max-width: 600px) {
   .page-frame { width: 100%; height: 100%; border: none; padding: 10px; }
-  .outer-glass { border-radius: 15px; }
-  .container { width: 100%; max-height: 95%; padding: 20px; }
+  .outer-glass { border-radius: 10px; }
+  .container { width: 100%; max-height: 98%; padding: 20px; }
 }
