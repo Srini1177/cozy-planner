@@ -1,19 +1,54 @@
-const API = window.location.origin; 
+const API = window.location.origin;
 
+/* 🔄 NAVIGATION & ROUTING */
 document.addEventListener("DOMContentLoaded", () => {
     const user = localStorage.getItem("cozy_user");
-    const isAuthPage = window.location.pathname.includes("login.html") || 
-                       window.location.pathname.includes("signup.html");
-                       
+    const path = window.location.pathname;
+    const isAuthPage = path.includes("login.html") || path.includes("signup.html") || path === "/";
+
+    // If no user and NOT on login page -> go to login
     if (!user && !isAuthPage) {
         window.location.href = "login.html";
-    } else if (document.getElementById("taskList")) {
+    } 
+    // If user exists and IS on login page -> go to dashboard
+    else if (user && isAuthPage) {
+        window.location.href = "index.html";
+    } 
+    // Otherwise, if we are on the dashboard, load the data
+    else if (user && document.getElementById("taskList")) {
         loadTasks();
     }
 });
 
+/* 🔐 AUTHENTICATION (For login.html / signup.html) */
+async function handleAuth(type) {
+    const user = document.getElementById("username").value.trim();
+    const pass = document.getElementById("password").value.trim();
+
+    if (!user || !pass) return alert("Please fill in all fields! ☕");
+
+    try {
+        const res = await fetch(`${API}/${type}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: user, password: pass })
+        });
+
+        if (res.ok) {
+            localStorage.setItem("cozy_user", user);
+            window.location.href = "index.html"; // Redirect after success
+        } else {
+            const data = await res.json();
+            alert(data.error || "Authentication failed");
+        }
+    } catch (err) {
+        alert("Server is sleeping. Please try again later.");
+    }
+}
+
+/* 📋 DASHBOARD LOGIC */
 async function loadTasks() {
-    const user = localStorage.getItem("cozy_user") || "Guest";
+    const user = localStorage.getItem("cozy_user");
     const welcome = document.getElementById("welcomeMsg");
     if (welcome) welcome.innerText = `welcome back, ${user}`;
 
@@ -35,9 +70,7 @@ async function loadTasks() {
                     </div>
                     <div class="coffee-wrapper">
                         <div class="steam">☁️</div>
-                        <div class="coffee">
-                            <div class="coffee-fill ${level}"></div>
-                        </div>
+                        <div class="coffee"><div class="coffee-fill ${level}"></div></div>
                     </div>
                 </li>`;
         }).join("");
@@ -48,43 +81,8 @@ async function loadTasks() {
             ).join("");
         }
     } catch (err) {
-        console.log("Waiting for backend...");
+        console.log("Fetching tasks...");
     }
-}
-
-async function addTask() {
-    const taskInput = document.getElementById("taskInput");
-    const deadlineInput = document.getElementById("deadlineInput");
-    const user = localStorage.getItem("cozy_user");
-
-    if (!taskInput.value.trim()) return;
-
-    await fetch(`${API}/add`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-            task: taskInput.value, 
-            deadline: deadlineInput.value,
-            username: user 
-        })
-    });
-
-    taskInput.value = "";
-    loadTasks();
-}
-
-async function completeTask(index) {
-    await fetch(`${API}/complete`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ index })
-    });
-    loadTasks();
-}
-
-function toggleHistory() {
-    const section = document.getElementById("historySection");
-    if (section) section.classList.toggle("show");
 }
 
 function logout() {
@@ -92,15 +90,6 @@ function logout() {
     window.location.href = "login.html";
 }
 
-function getCoffeeLevel(deadline) {
-    if (!deadline) return "low";
-    const diff = (new Date(deadline) - new Date()) / (1000 * 60 * 60 * 24);
-    if (diff <= 1) return "full";
-    if (diff <= 3) return "half";
-    return "low";
-}
-
-window.addTask = addTask;
-window.completeTask = completeTask;
-window.toggleHistory = toggleHistory;
+// Global exposure
+window.handleAuth = handleAuth;
 window.logout = logout;
