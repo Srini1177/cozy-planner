@@ -4,61 +4,31 @@ const API = window.location.origin;
 document.addEventListener("DOMContentLoaded", () => {
     const user = localStorage.getItem("cozy_user");
     const path = window.location.pathname;
-    const isAuthPage = path.includes("login.html") || path.includes("signup.html") || path === "/";
+    const isAuthPage = path.includes("login.html") || path.includes("signup.html");
 
-    // If no user and NOT on login page -> go to login
     if (!user && !isAuthPage) {
         window.location.href = "login.html";
-    } 
-    // If user exists and IS on login page -> go to dashboard
-    else if (user && isAuthPage) {
+    } else if (user && isAuthPage) {
         window.location.href = "index.html";
-    } 
-    // Otherwise, if we are on the dashboard, load the data
-    else if (user && document.getElementById("taskList")) {
+    } else if (user && document.getElementById("taskList")) {
         loadTasks();
     }
 });
 
-/* 🔐 AUTHENTICATION (For login.html / signup.html) */
-async function handleAuth(type) {
-    const user = document.getElementById("username").value.trim();
-    const pass = document.getElementById("password").value.trim();
-
-    if (!user || !pass) return alert("Please fill in all fields! ☕");
-
-    try {
-        const res = await fetch(`${API}/${type}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username: user, password: pass })
-        });
-
-        if (res.ok) {
-            localStorage.setItem("cozy_user", user);
-            window.location.href = "index.html"; // Redirect after success
-        } else {
-            const data = await res.json();
-            alert(data.error || "Authentication failed");
-        }
-    } catch (err) {
-        alert("Server is sleeping. Please try again later.");
-    }
-}
-
-/* 📋 DASHBOARD LOGIC */
+/* 📋 LOAD TASKS & HISTORY */
 async function loadTasks() {
-    const user = localStorage.getItem("cozy_user");
+    const user = localStorage.getItem("cozy_user") || "Guest";
     const welcome = document.getElementById("welcomeMsg");
     if (welcome) welcome.innerText = `welcome back, ${user}`;
 
     try {
         const res = await fetch(`${API}/tasks?username=${user}`);
         const data = await res.json();
-
+        
         const list = document.getElementById("taskList");
         const historyList = document.getElementById("historyList");
 
+        // 1. Render Active Tasks
         list.innerHTML = data.active.map((t, i) => {
             const level = getCoffeeLevel(t.deadline);
             return `
@@ -70,18 +40,73 @@ async function loadTasks() {
                     </div>
                     <div class="coffee-wrapper">
                         <div class="steam">☁️</div>
-                        <div class="coffee"><div class="coffee-fill ${level}"></div></div>
+                        <div class="coffee">
+                            <div class="coffee-fill ${level}"></div>
+                        </div>
                     </div>
                 </li>`;
         }).join("");
 
+        // 2. Render History (Finished Brews)
         if (historyList) {
-            historyList.innerHTML = data.completed.map(t => 
-                `<div class="history-item">✔ ${t.task}</div>`
-            ).join("");
+            if (data.completed.length === 0) {
+                historyList.innerHTML = `<p style="font-size:11px; color:#8d6e63; text-align:center;">no finished brews yet ☕</p>`;
+            } else {
+                historyList.innerHTML = data.completed.map(t => 
+                    `<div class="history-item">
+                        <span>✔ ${t.task}</span>
+                        <small>${t.deadline || ''}</small>
+                    </div>`
+                ).join("");
+            }
         }
     } catch (err) {
-        console.log("Fetching tasks...");
+        console.log("Cafe is syncing...");
+    }
+}
+
+/* ➕ ADD TASK */
+async function addTask() {
+    const taskInput = document.getElementById("taskInput");
+    const deadlineInput = document.getElementById("deadlineInput");
+    const user = localStorage.getItem("cozy_user");
+
+    if (!taskInput || !taskInput.value.trim()) return;
+
+    try {
+        await fetch(`${API}/add`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+                task: taskInput.value.trim(), 
+                deadline: deadlineInput ? deadlineInput.value : "",
+                username: user 
+            })
+        });
+        taskInput.value = "";
+        if (deadlineInput) deadlineInput.value = "";
+        loadTasks();
+    } catch (err) {
+        console.error("Add failed:", err);
+    }
+}
+
+/* ✅ COMPLETE TASK */
+async function completeTask(index) {
+    const user = localStorage.getItem("cozy_user");
+    await fetch(`${API}/complete`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ index, username: user })
+    });
+    loadTasks();
+}
+
+/* 📜 TOGGLE HISTORY */
+function toggleHistory() {
+    const section = document.getElementById("historySection");
+    if (section) {
+        section.classList.toggle("show");
     }
 }
 
@@ -90,6 +115,16 @@ function logout() {
     window.location.href = "login.html";
 }
 
-// Global exposure
-window.handleAuth = handleAuth;
+function getCoffeeLevel(deadline) {
+    if (!deadline) return "low";
+    const diff = (new Date(deadline) - new Date()) / (1000 * 60 * 60 * 24);
+    if (diff <= 1) return "full";
+    if (diff <= 3) return "half";
+    return "low";
+}
+
+// Global exposure for HTML onclicks
+window.addTask = addTask;
+window.completeTask = completeTask;
+window.toggleHistory = toggleHistory;
 window.logout = logout;
