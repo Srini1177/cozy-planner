@@ -129,6 +129,42 @@ li {
   }
 }
 
+/* 📜 HISTORY SECTION */
+.history {
+  display: none; /* Hidden by default */
+  margin-top: 15px;
+  border-top: 2px dashed #6b1405;
+  padding-top: 10px;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.history.show {
+  display: block; /* Shown when toggled */
+}
+
+.history-item {
+  background: #efebe9;
+  padding: 8px;
+  margin-bottom: 5px;
+  border-radius: 5px;
+  font-size: 13px;
+  text-decoration: line-through;
+  opacity: 0.6;
+  border: 1px dashed #6b1405;
+}
+
+/* ⌨️ BUTTON ROW */
+.button-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.logout-btn {
+  background: #efebe9; /* Slightly lighter for secondary action */
+}
+
 /* ⌨️ BUTTONS, INPUTS & HISTORY */
 input { padding: 12px; border-radius: 8px; border: 2px solid #6b1405; background: #fff8f0; margin-bottom: 10px; font-family: 'Courier New', monospace;}
 button { background: #d7ccc8; border: 2px solid #6b1405; border-radius: 8px; padding: 10px; cursor: pointer; box-shadow: 4px 4px 0px #6b1405; font-weight: bold; font-family: 'Courier New', monospace; margin-top: 5px;}
