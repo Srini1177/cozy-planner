@@ -50,42 +50,55 @@ async function addTask() {
     loadTasks();
 }
 
+/* 📜 HISTORY LOGIC */
+function toggleHistory() {
+    const hist = document.getElementById("historySection");
+    // Toggle the "show" class we defined in CSS
+    hist.classList.toggle("show");
+}
+
+/* 📋 UPDATE LOAD TASKS */
 async function loadTasks() {
     const user = localStorage.getItem("cozy_user");
     const welcome = document.getElementById("welcomeMsg");
     if (welcome) welcome.innerText = `welcome back, ${user}`;
 
-    const res = await fetch(`${API}/tasks?username=${user}`);
-    const data = await res.json();
+    try {
+        const res = await fetch(`${window.location.origin}/tasks?username=${user}`);
+        const data = await res.json();
 
-    // Render Active Tasks
-    const list = document.getElementById("taskList");
-    list.innerHTML = "";
-    data.active.forEach(t => {
-        const level = getCoffeeLevel(t.deadline);
-        list.innerHTML += `
-            <li>
-                <input type="checkbox" onclick="completeTask(${t.id})">
-                <div class="task-content">
-                    <b>${t.task}</b>
-                    <span style="font-size: 11px; color: #8d6e63;">${t.deadline || 'no deadline'}</span>
-                </div>
-                <div class="coffee-wrapper">
-                    <div class="steam"></div>
-                    <div class="coffee"><div class="coffee-fill ${level}"></div></div>
-                </div>
-            </li>`;
-    });
+        // 1. Render Active Tasks (with Steam!)
+        const list = document.getElementById("taskList");
+        list.innerHTML = data.active.map(t => {
+            const level = getCoffeeLevel(t.deadline);
+            return `
+                <li>
+                    <input type="checkbox" onclick="completeTask(${t.id})">
+                    <div class="task-content">
+                        <b>${t.task}</b>
+                        <span>${t.deadline || 'no deadline'}</span>
+                    </div>
+                    <div class="coffee-wrapper">
+                        <div class="steam">☁️</div>
+                        <div class="coffee"><div class="coffee-fill ${level}"></div></div>
+                    </div>
+                </li>`;
+        }).join("");
 
-    // Render History
-    const historyList = document.getElementById("historyList");
-    if (historyList) {
-        historyList.innerHTML = data.completed.map(t => 
-            `<li style="opacity: 0.6; text-decoration: line-through; border-style: dashed;">${t.task}</li>`
-        ).join("");
+        // 2. Render Completed History
+        const historyList = document.getElementById("historyList");
+        if (historyList) {
+            historyList.innerHTML = data.completed.map(t => 
+                `<div class="history-item">${t.task}</div>`
+            ).join("");
+        }
+    } catch (err) {
+        console.error("Error loading tasks:", err);
     }
 }
 
+// Make sure it's global
+window.toggleHistory = toggleHistory;
 async function completeTask(id) {
     await fetch(`${API}/complete`, {
         method: "POST",
