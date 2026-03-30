@@ -15,6 +15,31 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+async function handleAuth(type) {
+    const user = document.getElementById("username").value.trim();
+    const pass = document.getElementById("password").value.trim();
+
+    if (!user || !pass) return alert("Please fill in all fields! ☕");
+
+    try {
+        const res = await fetch(`${API}/${type}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: user, password: pass })
+        });
+
+        if (res.ok) {
+            localStorage.setItem("cozy_user", user);
+            window.location.href = "index.html"; // Redirect after success
+        } else {
+            const data = await res.json();
+            alert(data.error || "Authentication failed");
+        }
+    } catch (err) {
+        alert("Server is sleeping. Please try again later.");
+    }
+}
+
 /* 📋 LOAD TASKS & HISTORY */
 async function loadTasks() {
     const user = localStorage.getItem("cozy_user") || "Guest";
