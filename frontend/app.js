@@ -1,11 +1,7 @@
-/* 🚀 DEPLOYMENT CONFIG: Uses relative paths for GitHub/Cloud hosting */
 const API = window.location.origin; 
 
-/* 🔄 INITIALIZE */
 document.addEventListener("DOMContentLoaded", () => {
     const user = localStorage.getItem("cozy_user");
-    
-    // Redirect to login if no user is found, unless already on login/signup pages
     const isAuthPage = window.location.pathname.includes("login.html") || 
                        window.location.pathname.includes("signup.html");
                        
@@ -16,7 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-/* 📋 LOAD TASKS */
 async function loadTasks() {
     const user = localStorage.getItem("cozy_user") || "Guest";
     const welcome = document.getElementById("welcomeMsg");
@@ -28,15 +23,7 @@ async function loadTasks() {
 
         const list = document.getElementById("taskList");
         const historyList = document.getElementById("historyList");
-        const dayPlan = document.getElementById("dayPlan");
 
-        if (dayPlan) {
-            dayPlan.innerText = data.active.length > 0 
-                ? `Start with "${data.active[0].task}"` 
-                : "☕ add something to start your day";
-        }
-
-        // Active Tasks with Steam and Alignment
         list.innerHTML = data.active.map((t, i) => {
             const level = getCoffeeLevel(t.deadline);
             return `
@@ -55,18 +42,16 @@ async function loadTasks() {
                 </li>`;
         }).join("");
 
-        // History Tasks
         if (historyList) {
             historyList.innerHTML = data.completed.map(t => 
                 `<div class="history-item">✔ ${t.task}</div>`
             ).join("");
         }
     } catch (err) {
-        console.error("Deployment Error: Ensure backend is running.", err);
+        console.log("Waiting for backend...");
     }
 }
 
-/* ➕ ADD TASK */
 async function addTask() {
     const taskInput = document.getElementById("taskInput");
     const deadlineInput = document.getElementById("deadlineInput");
@@ -88,7 +73,6 @@ async function addTask() {
     loadTasks();
 }
 
-/* ✅ COMPLETE TASK */
 async function completeTask(index) {
     await fetch(`${API}/complete`, {
         method: "POST",
@@ -98,10 +82,9 @@ async function completeTask(index) {
     loadTasks();
 }
 
-/* 📜 UTILITIES */
 function toggleHistory() {
-    const historySection = document.getElementById("historySection");
-    if (historySection) historySection.classList.toggle("show");
+    const section = document.getElementById("historySection");
+    if (section) section.classList.toggle("show");
 }
 
 function logout() {
@@ -117,7 +100,6 @@ function getCoffeeLevel(deadline) {
     return "low";
 }
 
-// Global exposure for HTML onclick events
 window.addTask = addTask;
 window.completeTask = completeTask;
 window.toggleHistory = toggleHistory;
