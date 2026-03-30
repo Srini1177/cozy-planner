@@ -1,4 +1,4 @@
-/* 🌄  CAFE BACKGROUND */
+/* 🌄 CAFE BACKGROUND */
 body {
   margin: 0;
   font-family: 'Courier New', monospace;
@@ -7,9 +7,10 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: hidden;
 }
 
-/* 🪟  PAGE FRAME */
+/* 🪟 PAGE FRAME - Large border for laptop */
 .page-frame {
   width: 95%;
   height: 95%;
@@ -22,122 +23,56 @@ body {
   align-items: center;
 }
 
-/* 🧊  OUTER BLUR */
+/* 🧊 OUTER GLASS - Expands to fill the frame on laptop */
 .outer-glass {
-  width: auto;
-  min-width: 550px;         /* Keeps it wide and premium on laptop */
-  height: auto;
-  max-height: 92vh;
+  width: 100%;             /* Fills the 95% frame */
+  height: 100%;            /* Fills the 95% frame */
   backdrop-filter: blur(8px);
   background: rgba(255, 248, 240, 0.3);
   border: 4px solid #6b1405;
-  border-radius: 30px;
+  border-radius: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 40px;           /* Spacious padding for laptop */
   box-sizing: border-box;
 }
 
-/* 📓  INNER CONTAINER */
+/* 📓 INNER CONTAINER - The scrollable paper */
 .container {
-  width: 100%;             /* Fills the outer-glass width */
-  max-width: 450px;        /* Matches your original desired width */
-  max-height: 80vh;
+  width: 420px;
+  max-height: 90%;         /* Ensures it doesn't hit the glass edges */
   background: #f5ebe0;
   border: 3px solid #6b1405;
   border-radius: 20px;
   padding: 25px;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
-  box-shadow: 10px 10px 0px #6b1405;
+  box-shadow: 8px 8px 0px #6b1405;
   box-sizing: border-box;
+  overflow-y: auto;        /* Allows scrolling inside the paper */
 }
 
-/* ☕  TITLE & TEXT */
-h1 { text-align: center; color: #841f0e; margin: 0; }
-p { text-align: center; color: #481403c9; margin-top: -5px; }
-
-/* ✍️  INPUT AREA */
-.input-area {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 15px;
-}
-
-input {
-  padding: 12px;
-  border-radius: 8px;
-  border: 2px solid #6b1405;
-  background: #fff8f0;
-  font-family: 'Courier New', monospace;
-}
-
-/* ⌨️  BUTTONS */
-button {
-  background: #d7ccc8;
-  border: 2px solid #6b1405;
-  border-radius: 8px;
-  padding: 10px;
-  cursor: pointer;
-  box-shadow: 4px 4px 0px #6b1405;
-  font-weight: bold;
-  font-family: 'Courier New', monospace;
-  transition: 0.15s;
-}
-
-button:active {
-  transform: translateY(2px);
-  box-shadow: 1px 1px 0px #6b1405;
-}
-
-/* 📋  TASK LIST & ALIGNMENT */
-ul { list-style: none; padding: 0; margin: 0; }
-
-li {
-  background: #fff8f0;
-  margin-bottom: 12px;
-  padding: 12px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;     /* 🔥 Keeps checkbox, text, and cup aligned */
-  border: 2px solid #6b1405;
-  box-shadow: 4px 4px 0px #6b1405;
-}
-
-.task-content {
-  flex: 1;
-  margin: 0 15px;
-  display: flex;
-  flex-direction: column;
-}
-
-.task-content b { color: #6b1405; }
-.task-content span { color: #8d6e63; font-size: 11px; }
-
-/* ☕  STEAM & CUP */
+/* ☕ STEAM & CUP */
 .coffee-wrapper {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 30px;
+  height: 35px;
 }
 
 .steam {
-  width: 2px;
-  height: 8px;
-  background: rgba(107, 20, 5, 0.4);
-  margin-bottom: 2px;
-  border-radius: 2px;
-  animation: steam-rise 1.5s infinite;
+  position: absolute;
+  top: -5px;
+  font-size: 10px;
+  animation: steam-float 2s infinite ease-in-out;
 }
 
-@keyframes steam-rise {
-  0% { transform: translateY(0); opacity: 0; }
-  50% { opacity: 0.6; }
-  100% { transform: translateY(-10px); opacity: 0; }
+@keyframes steam-float {
+  0% { transform: translateY(2px); opacity: 0; }
+  50% { transform: translateY(-5px); opacity: 0.8; }
+  100% { transform: translateY(-12px); opacity: 0; }
 }
 
 .coffee {
@@ -145,7 +80,8 @@ li {
   height: 18px;
   border: 1.5px solid #6b1405;
   border-radius: 2px 2px 8px 8px;
-  position: relative;
+  position: absolute;
+  bottom: 5px;
   overflow: hidden;
   display: flex;
   align-items: flex-end;
@@ -154,41 +90,49 @@ li {
 .coffee-fill { width: 100%; background: #6d4c41; transition: height 0.5s; }
 .full { height: 85%; } .half { height: 45%; } .low { height: 15%; }
 
-/* 📜  HISTORY & LOGOUT */
-.history {
-  display: none;
-  border-top: 2px dashed #6b1405;
-  margin-top: 15px;
-  padding-top: 10px;
+/* 📋 TASK LIST ALIGNMENT */
+ul { list-style: none; padding: 0; margin: 0; }
+
+li {
+  background: #fff8f0;
+  margin-bottom: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;     /* Perfectly centers checkbox and cup */
+  border: 2px solid #6b1405;
+  box-shadow: 4px 4px 0px #6b1405;
 }
 
-.history.show { display: block; }
-
-.history div {
-  background: #efebe9;
-  padding: 8px;
-  margin-bottom: 5px;
-  border-radius: 5px;
-  font-size: 13px;
-  text-decoration: line-through;
-  opacity: 0.6;
+.task-content {
+  flex: 1;
+  margin: 0 15px;
 }
 
-/* 📱  MOBILE RESPONSIVENESS */
+/* 📱 MOBILE RESPONSIVENESS */
 @media (max-width: 600px) {
-  .outer-glass {
-    min-width: unset;      /* Removes the laptop width */
-    width: 95%;            /* Shrinks to fit mobile screen */
-    padding: 15px;         /* Thinner padding for small screens */
-  }
-  
-  .container {
-    padding: 20px;
-    box-shadow: 6px 6px 0px #6b1405;
-  }
-  
   .page-frame {
-    padding: 5px;
-    border-width: 2px;
+    width: 100%;
+    height: 100%;
+    border: none;          /* Removes the double border on small screens */
+    padding: 10px;
+  }
+
+  .outer-glass {
+    border-radius: 15px;
+    padding: 10px;
+  }
+
+  .container {
+    width: 100%;
+    max-height: 95%;
   }
 }
+
+/* ⌨️ BUTTONS, INPUTS & HISTORY */
+input { padding: 12px; border-radius: 8px; border: 2px solid #6b1405; background: #fff8f0; margin-bottom: 10px; font-family: 'Courier New', monospace;}
+button { background: #d7ccc8; border: 2px solid #6b1405; border-radius: 8px; padding: 10px; cursor: pointer; box-shadow: 4px 4px 0px #6b1405; font-weight: bold; font-family: 'Courier New', monospace; margin-top: 5px;}
+button:active { transform: translateY(2px); box-shadow: 1px 1px 0px #6b1405; }
+.history { display: none; margin-top: 15px; border-top: 2px dashed #6b1405; padding-top: 10px; }
+.history.show { display: block; }
+.history div { background: #efebe9; padding: 8px; margin-bottom: 5px; border-radius: 5px; font-size: 13px; text-decoration: line-through; opacity: 0.6; }
