@@ -118,15 +118,30 @@ async function addTask() {
 }
 
 /* ✅ COMPLETE TASK */
-async function completeTask(index) {
+/* ✅ COMPLETE TASK - FIXED */
+async function completeTask(taskId, taskName) {
     const user = localStorage.getItem("cozy_user");
-    await fetch(`${API}/complete`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ index, username: user })
-    });
-    loadTasks();
+    
+    try {
+        await fetch(`${API}/complete`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+                username: user,
+                task_id: taskId,
+                task_name: taskName // Sending the name ensures the backend finds the right one
+            })
+        });
+        
+        // Refresh the list so it disappears from 'Active' and appears in 'History'
+        loadTasks(); 
+    } catch (err) {
+        console.error("Could not complete task:", err);
+    }
 }
+
+// Ensure the window can see the updated function
+window.completeTask = completeTask;
 
 /* 📜 TOGGLE HISTORY */
 function toggleHistory() {
