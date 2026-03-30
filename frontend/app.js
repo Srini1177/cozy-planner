@@ -1,10 +1,10 @@
 const API = window.location.origin;
 
-/* 🔄 NAVIGATION & ROUTING */
+/* 🔄 NAVIGATION */
 document.addEventListener("DOMContentLoaded", () => {
     const user = localStorage.getItem("cozy_user");
     const path = window.location.pathname;
-    const isAuthPage = path.includes("login.html") || path.includes("signup.html");
+    const isAuthPage = path.includes("login.html");
 
     if (!user && !isAuthPage) {
         window.location.href = "login.html";
@@ -15,11 +15,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+/* 🔐 AUTH */
 async function handleAuth(type) {
     const user = document.getElementById("username").value.trim();
     const pass = document.getElementById("password").value.trim();
 
-    if (!user || !pass) return alert("Please fill in all fields! ☕");
+    if (!user || !pass) return alert("Fill all fields ☕");
 
     try {
         const res = await fetch(`${API}/${type}`, {
@@ -28,65 +29,50 @@ async function handleAuth(type) {
             body: JSON.stringify({ username: user, password: pass })
         });
 
+        const data = await res.json();
+
         if (res.ok) {
             localStorage.setItem("cozy_user", user);
-            window.location.href = "index.html"; // Redirect after success
+            window.location.href = "index.html";
         } else {
-            const data = await res.json();
-            alert(data.error || "Authentication failed");
+            alert(data.error || "Auth failed");
         }
-    } catch (err) {
-        alert("Server is sleeping. Please try again later.");
+    } catch {
+        alert("Server sleeping 😴 try again");
     }
 }
 
-/* 📋 LOAD TASKS & HISTORY */
+/* 📋 LOAD TASKS */
 async function loadTasks() {
-    const user = localStorage.getItem("cozy_user") || "Guest";
-    const welcome = document.getElementById("welcomeMsg");
-    if (welcome) welcome.innerText = `welcome back, ${user}`;
+    const user = localStorage.getItem("cozy_user");
 
     try {
         const res = await fetch(`${API}/tasks?username=${user}`);
         const data = await res.json();
-        
+
         const list = document.getElementById("taskList");
         const historyList = document.getElementById("historyList");
 
-        // 1. Render Active Tasks
-        list.innerHTML = data.active.map((t, i) => {
-            const level = getCoffeeLevel(t.deadline);
-            return `
-                <li>
-                    <input type="checkbox" onclick="completeTask(${t.id || i}, '${t.task}')">
-                    <div class="task-content">
-                        <b>${t.task}</b>
-                        <span>${t.deadline || 'no deadline'}</span>
-                    </div>
-                    <div class="coffee-wrapper">
-                        <div class="steam">☁️</div>
-                        <div class="coffee">
-                            <div class="coffee-fill ${level}"></div>
-                        </div>
-                    </div>
-                </li>`;
-        }).join("");
+        list.innerHTML = data.active.map(t => `
+            <li>
+                <input type="checkbox" onclick="completeTask(${t.id})">
+                <div class="task-content">
+                    <b>${t.task}</b>
+                    <span>${t.deadline || 'no deadline'}</span>
+                </div>
+            </li>
+        `).join("");
 
-        // 2. Render History (Finished Brews)
         if (historyList) {
-            if (data.completed.length === 0) {
-                historyList.innerHTML = `<p style="font-size:11px; color:#8d6e63; text-align:center;">no finished brews yet ☕</p>`;
-            } else {
-                historyList.innerHTML = data.completed.map(t => 
-                    `<div class="history-item">
-                        <span>✔ ${t.task}</span>
-                        <small>${t.deadline || ''}</small>
-                    </div>`
-                ).join("");
-            }
+            historyList.innerHTML = data.completed.map(t => `
+                <div class="history-item">
+                    ✔ ${t.task}
+                </div>
+            `).join("") || "no finished brews ☕";
         }
-    } catch (err) {
-        console.log("Cafe is syncing...");
+
+    } catch {
+        console.log("error loading tasks");
     }
 }
 
@@ -96,58 +82,43 @@ async function addTask() {
     const deadlineInput = document.getElementById("deadlineInput");
     const user = localStorage.getItem("cozy_user");
 
-    if (!taskInput || !taskInput.value.trim()) return;
+    if (!taskInput.value.trim()) return;
 
-    try {
-        await fetch(`${API}/add`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-                task: taskInput.value.trim(), 
-                deadline: deadlineInput ? deadlineInput.value : "",
-                username: user 
-            })
-        });
-        taskInput.value = "";
-        if (deadlineInput) deadlineInput.value = "";
-        loadTasks();
-    } catch (err) {
-        console.error("Add failed:", err);
-    }
+    await fetch(`${API}/add`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            task: taskInput.value.trim(),
+            deadline: deadlineInput.value,
+            username: user
+        })
+    });
+
+    taskInput.value = "";
+    deadlineInput.value = "";
+    loadTasks();
 }
 
-/* ✅ COMPLETE TASK */
-/* ✅ COMPLETE TASK - FIXED */
-async function completeTask(taskId, taskName) {
-    const user = localStorage.getItem("cozy_user");
-    
+/* ✅ FIXED COMPLETE TASK */
+async function completeTask(taskId) {
     try {
         await fetch(`${API}/complete`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-                username: user,
-                task_id: taskId,
-                task_name: taskName // Sending the name ensures the backend finds the right one
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                id: taskId   // ✅ FIXED (was task_id ❌)
             })
         });
-        
-        // Refresh the list so it disappears from 'Active' and appears in 'History'
-        loadTasks(); 
+
+        loadTasks(); // refresh UI
     } catch (err) {
-        console.error("Could not complete task:", err);
+        console.error(err);
     }
 }
 
-// Ensure the window can see the updated function
-window.completeTask = completeTask;
-
-/* 📜 TOGGLE HISTORY */
+/* 🎛️ OTHER */
 function toggleHistory() {
-    const section = document.getElementById("historySection");
-    if (section) {
-        section.classList.toggle("show");
-    }
+    document.getElementById("historySection").classList.toggle("show");
 }
 
 function logout() {
@@ -155,15 +126,6 @@ function logout() {
     window.location.href = "login.html";
 }
 
-function getCoffeeLevel(deadline) {
-    if (!deadline) return "low";
-    const diff = (new Date(deadline) - new Date()) / (1000 * 60 * 60 * 24);
-    if (diff <= 1) return "full";
-    if (diff <= 3) return "half";
-    return "low";
-}
-
-// Global exposure for HTML onclicks
 window.addTask = addTask;
 window.completeTask = completeTask;
 window.toggleHistory = toggleHistory;
