@@ -58,7 +58,6 @@ async function loadTasks() {
             const level = getCoffeeLevel(t.deadline);
             return `
                 <li>
-                    // ... inside list.innerHTML mapping ...
                     <input type="checkbox" onclick="completeTask(${t.id || i}, '${t.task}')">
                     <div class="task-content">
                         <b>${t.task}</b>
