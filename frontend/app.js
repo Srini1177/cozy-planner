@@ -1,132 +1,151 @@
 const API = window.location.origin;
 
-/* 🔄 NAVIGATION */
+/* 🔄 ROUTING */
 document.addEventListener("DOMContentLoaded", () => {
-    const user = localStorage.getItem("cozy_user");
-    const path = window.location.pathname;
-    const isAuthPage = path.includes("login.html");
+  const user = localStorage.getItem("cozy_user");
+  const path = window.location.pathname;
 
-    if (!user && !isAuthPage) {
-        window.location.href = "login.html";
-    } else if (user && isAuthPage) {
-        window.location.href = "index.html";
-    } else if (user && document.getElementById("taskList")) {
-        loadTasks();
-    }
+  if (!user && !path.includes("login.html")) {
+    window.location.href = "login.html";
+  } else if (user && path.includes("login.html")) {
+    window.location.href = "index.html";
+  } else if (user && document.getElementById("taskList")) {
+    loadTasks();
+  }
 });
 
-/* 🔐 AUTH */
+/* 🔐 LOGIN + SIGNUP */
 async function handleAuth(type) {
-    const user = document.getElementById("username").value.trim();
-    const pass = document.getElementById("password").value.trim();
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
 
-    if (!user || !pass) return alert("Fill all fields ☕");
+  if (!username || !password) return alert("Fill all fields ☕");
 
-    try {
-        const res = await fetch(`${API}/${type}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username: user, password: pass })
-        });
+  const res = await fetch(`${API}/${type}`, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ username, password })
+  });
 
-        const data = await res.json();
+  const data = await res.json();
 
-        if (res.ok) {
-            localStorage.setItem("cozy_user", user);
-            window.location.href = "index.html";
-        } else {
-            alert(data.error || "Auth failed");
-        }
-    } catch {
-        alert("Server sleeping 😴 try again");
-    }
-}
-
-/* 📋 LOAD TASKS */
-async function loadTasks() {
-    const user = localStorage.getItem("cozy_user");
-
-    try {
-        const res = await fetch(`${API}/tasks?username=${user}`);
-        const data = await res.json();
-
-        const list = document.getElementById("taskList");
-        const historyList = document.getElementById("historyList");
-
-        list.innerHTML = data.active.map(t => `
-            <li>
-                <input type="checkbox" onclick="completeTask(${t.id})">
-                <div class="task-content">
-                    <b>${t.task}</b>
-                    <span>${t.deadline || 'no deadline'}</span>
-                </div>
-            </li>
-        `).join("");
-
-        if (historyList) {
-            historyList.innerHTML = data.completed.map(t => `
-                <div class="history-item">
-                    ✔ ${t.task}
-                </div>
-            `).join("") || "no finished brews ☕";
-        }
-
-    } catch {
-        console.log("error loading tasks");
-    }
+  if (res.ok) {
+    localStorage.setItem("cozy_user", username);
+    window.location.href = "index.html";
+  } else {
+    alert(data.error);
+  }
 }
 
 /* ➕ ADD TASK */
 async function addTask() {
-    const taskInput = document.getElementById("taskInput");
-    const deadlineInput = document.getElementById("deadlineInput");
-    const user = localStorage.getItem("cozy_user");
+  const task = document.getElementById("taskInput").value.trim();
+  const deadline = document.getElementById("deadlineInput").value;
+  const username = localStorage.getItem("cozy_user");
 
-    if (!taskInput.value.trim()) return;
+  if (!task) return;
 
-    await fetch(`${API}/add`, {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-            task: taskInput.value.trim(),
-            deadline: deadlineInput.value,
-            username: user
-        })
-    });
+  await fetch(`${API}/add`, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ task, deadline, username })
+  });
 
-    taskInput.value = "";
-    deadlineInput.value = "";
-    loadTasks();
+  document.getElementById("taskInput").value = "";
+  document.getElementById("deadlineInput").value = "";
+
+  loadTasks();
 }
 
-/* ✅ FIXED COMPLETE TASK */
-async function completeTask(taskId) {
-    try {
-        await fetch(`${API}/complete`, {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                id: taskId   // ✅ FIXED (was task_id ❌)
-            })
-        });
+/* ✅ COMPLETE TASK */
+async function completeTask(id) {
+  await fetch(`${API}/complete`, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ id })
+  });
 
-        loadTasks(); // refresh UI
-    } catch (err) {
-        console.error(err);
-    }
+  loadTasks();
 }
 
-/* 🎛️ OTHER */
+/* ❌ DELETE TASK */
+async function deleteTask(id) {
+  await fetch(`${API}/delete`, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ id })
+  });
+
+  loadTasks();
+}
+
+/* 📜 TOGGLE HISTORY */
 function toggleHistory() {
-    document.getElementById("historySection").classList.toggle("show");
+  document.getElementById("historyList").classList.toggle("show");
 }
 
+/* ☕ COFFEE LEVEL */
+function getCoffeeLevel(deadline) {
+  if (!deadline) return "low";
+
+  const diff = (new Date(deadline) - new Date()) / (1000 * 60 * 60 * 24);
+
+  if (diff <= 1) return "full";
+  if (diff <= 3) return "half";
+  return "low";
+}
+
+/* 📋 LOAD TASKS */
+async function loadTasks() {
+  const username = localStorage.getItem("cozy_user");
+
+  const res = await fetch(`${API}/tasks?username=${username}`);
+  const data = await res.json();
+
+  const list = document.getElementById("taskList");
+  const history = document.getElementById("historyList");
+
+  list.innerHTML = "";
+  history.innerHTML = "";
+
+  /* ACTIVE TASKS */
+  data.active.forEach(t => {
+    const level = getCoffeeLevel(t.deadline);
+
+    list.innerHTML += `
+      <li>
+        <input type="checkbox" onclick="completeTask(${t.id})">
+
+        <div class="task-content">
+          <b>${t.task}</b>
+          <span>${t.deadline || "no deadline"}</span>
+        </div>
+
+        <div class="coffee">
+          <div class="coffee-fill ${level}"></div>
+        </div>
+
+        <button class="delete-btn" onclick="deleteTask(${t.id})">✖</button>
+      </li>
+    `;
+  });
+
+  /* COMPLETED TASKS */
+  data.completed.forEach(t => {
+    history.innerHTML += `<div>✔ ${t.task}</div>`;
+  });
+}
+
+/* 🚪 LOGOUT */
 function logout() {
-    localStorage.removeItem("cozy_user");
-    window.location.href = "login.html";
+  localStorage.removeItem("cozy_user");
+  window.location.href = "login.html";
 }
 
+/* 🌍 GLOBAL */
 window.addTask = addTask;
 window.completeTask = completeTask;
+window.deleteTask = deleteTask;
 window.toggleHistory = toggleHistory;
 window.logout = logout;
+window.handleAuth = handleAuth;
