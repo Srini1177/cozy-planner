@@ -32,9 +32,10 @@ body {
   align-items: center;
 }
 
-/* 📓 CONTAINER — shrinks to content, caps at max-height */
+/* 📓 CONTAINER — fixed height, never grows */
 .container {
   width: 420px;
+  height: fit-content;
   max-height: 88vh;
   background: #f5ebe0;
   border: 3px solid #6b1405;
@@ -43,7 +44,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  overflow: visible;
+  overflow: hidden;
   box-shadow: 6px 6px 0px #6b1405;
   box-sizing: border-box;
 }
@@ -110,14 +111,17 @@ p {
   box-shadow: 1px 1px 0px #6b1405;
 }
 
-/* 📋 TASK SECTION — scrollable, capped, no empty space */
+/* 📋 TASK SECTION — no height when empty, scrollable when tasks exist */
 .task-section {
-  max-height: 180px;
+  height: auto;
   overflow-y: auto;
   overflow-x: hidden;
   flex-shrink: 0;
-  /* clip border-radius on scroll area */
-  border-radius: 0 0 4px 4px;
+}
+
+/* JS adds this class when real tasks exist — locks height so scroll kicks in */
+.task-section.has-tasks {
+  height: 160px;
 }
 
 .task-section::-webkit-scrollbar       { width: 4px; }
@@ -313,13 +317,17 @@ li.empty-msg {
   display: none;
   border-top: 2px dashed #6b1405;
   padding-top: 8px;
-  max-height: 130px;
   overflow-y: auto;
   overflow-x: hidden;
   flex-shrink: 0;
 }
 
-.history.show { display: flex; flex-direction: column; }
+.history.show { display: block; }
+
+/* JS adds this when completed tasks exist — caps height so it scrolls */
+.history.has-items {
+  height: 130px;
+}
 
 .history::-webkit-scrollbar       { width: 4px; }
 .history::-webkit-scrollbar-thumb { background: #6b1405; border-radius: 4px; }
