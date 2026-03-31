@@ -103,6 +103,22 @@ async function loadTasks() {
   list.innerHTML = "";
   history.innerHTML = "";
 
+  /* toggle scrollable height — only when real tasks exist */
+  const taskSection = document.querySelector(".task-section");
+  const historySection = document.getElementById("historySection");
+
+  if (data.active.length > 0) {
+    taskSection.classList.add("has-tasks");
+  } else {
+    taskSection.classList.remove("has-tasks");
+  }
+
+  if (data.completed.length > 0) {
+    historySection.classList.add("has-items");
+  } else {
+    historySection.classList.remove("has-items");
+  }
+
   /* ACTIVE TASKS */
   if (data.active.length === 0) {
     list.innerHTML = `<li class="empty-msg">no tasks yet — time to relax ☕</li>`;
