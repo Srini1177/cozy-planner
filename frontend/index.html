@@ -1,36 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cozy Planner ☕</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cozy Planner ☕</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="page-frame">
-        <div class="outer-glass">
-            <div class="container">
-                <h1>☕ Cozy Planner</h1>
-                <p id="welcomeMsg"></p>
-                <div class="input-area">
-                    <input id="taskInput" placeholder="what’s brewing?">
-                    <input id="deadlineInput" type="date">
-                    <button onclick="addTask()">Add</button>
-                </div>
-                <div class="task-section">
-                    <ul id="taskList"></ul>
-                </div>
-                <div class="button-row">
-                    <button onclick="toggleHistory()">History</button>
-                    <div id="historySection" class="history">
-                    <div id="historyList"></div>
-                    <p style="font-size: 12px; font-weight: bold; color: #6b1405; text-align: left;">📜 Finished Brews</p>
-                    </div>
-                    <button onclick="logout()" class="logout-btn">Logout</button>
-                </div>
-            </div>
+  <div class="page-frame">
+    <div class="outer-glass">
+      <div class="container">
+        <h1>☕ Cozy Planner</h1>
+        <p id="welcomeMsg"></p>
+
+        <!-- INPUT AREA matching the reference image -->
+        <div class="input-area">
+          <input id="taskInput" placeholder="what's brewing?">
+          <input id="deadlineInput" type="date">
+          <button onclick="addTask()">Add</button>
         </div>
+
+        <!-- TASK LIST -->
+        <div class="task-section">
+          <ul id="taskList"></ul>
+        </div>
+
+        <!-- BOTTOM BUTTONS & HISTORY -->
+        <div class="button-row">
+          <button onclick="toggleHistory()" class="history-btn">📜 History</button>
+          <button onclick="logout()" class="logout-btn">Logout</button>
+        </div>
+
+        <div id="historySection" class="history">
+          <p class="history-title">Finished Brews ✔</p>
+          <div id="historyList"></div>
+        </div>
+
+      </div>
     </div>
-    <script src="app.js"></script>
+  </div>
+  <script src="app.js"></script>
 </body>
 </html>
