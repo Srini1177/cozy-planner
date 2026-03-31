@@ -1,4 +1,4 @@
-/* 🌄 GLOBAL SETUP */
+/* 🌄 BACKGROUND */
 body {
   margin: 0;
   font-family: 'Courier New', monospace;
@@ -7,10 +7,9 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
 }
 
-/* 🪟 PAGE FRAME - 95% Border */
+/* 🪟 FRAME */
 .page-frame {
   width: 95%;
   height: 95%;
@@ -18,160 +17,202 @@ body {
   border-radius: 20px;
   padding: 20px;
   box-sizing: border-box;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
-/* 🧊 OUTER GLASS - Large on Laptop */
+/* 🧊 GLASS */
 .outer-glass {
   width: 100%;
   height: 100%;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(5px);
   background: rgba(255, 248, 240, 0.3);
   border: 4px solid #6b1405;
   border-radius: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
-  box-sizing: border-box;
 }
 
-/* 📓 INNER CONTAINER - Centered Content */
+/* 📓 CONTAINER */
 .container {
   width: 420px;
-  max-height: 92%;
+  max-height: 620px;
   background: #f5ebe0;
   border: 3px solid #6b1405;
   border-radius: 20px;
-  padding: 30px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  align-items: stretch;    /* 🔥 Ensures inputs/lists fill the width */
-  box-shadow: 8px 8px 0px #6b1405;
-  box-sizing: border-box;
   overflow: hidden;
+  box-shadow: 6px 6px 0px #6b1405;
 }
 
-/* 📋 HEADER ALIGNMENT */
-h1 { text-align: center; color: #841f0e; margin: 0; font-size: 24px; }
-#welcomeMsg { text-align: center; color: #481403c9; font-size: 14px; margin-bottom: 15px; }
+/* ☕ TITLE */
+h1 {
+  text-align: center;
+  color: #841f0e;
+}
 
-/* ✍️ INPUT AREA ALIGNMENT */
+p {
+  text-align: center;
+  color: #481403c9;
+}
+
+/* ✍️ INPUT */
 .input-area {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 100%;             /* 🔥 Ensures input doesn't shrink */
+  gap: 6px;
 }
 
 input {
-  padding: 12px;
+  flex: 1;
+  padding: 8px;
   border-radius: 8px;
   border: 2px solid #6b1405;
   background: #fff8f0;
-  font-family: inherit;
-  width: 100%;             /* 🔥 Fixes alignment within container */
-  box-sizing: border-box;
 }
 
-/* 📋 TASK LIST ALIGNMENT */
-.task-section {
-  flex: 1;
-  overflow-y: auto;
-  margin: 15px 0;
-}
-
-ul { list-style: none; padding: 0; margin: 0; width: 100%; }
-
-li {
-  background: #fff8f0;
-  margin-bottom: 10px;
-  padding: 12px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;     /* 🔥 Vertical alignment for checkbox and cup */
-  border: 2px solid #6b1405;
-  box-shadow: 4px 4px 0px #6b1405;
-}
-
-.task-content {
-  flex: 1;
-  margin: 0 15px;
-}
-
-/* ☁️ STEAM & CUP */
-.coffee-wrapper {
-  position: relative;
-  width: 30px;
-  height: 35px;
-  display: flex;
-  justify-content: center;
-}
-
-.steam {
-  position: absolute;
-  top: 0;
-  font-size: 10px;
-  animation: steam-float 2s infinite ease-in-out;
-}
-
-@keyframes steam-float {
-  0% { transform: translateY(5px); opacity: 0; }
-  50% { transform: translateY(-2px); opacity: 0.8; }
-  100% { transform: translateY(-12px); opacity: 0; }
-}
-
-.coffee {
-  width: 22px;
-  height: 18px;
-  border: 1.5px solid #6b1405;
-  border-radius: 2px 2px 8px 8px;
-  position: absolute;
-  bottom: 2px;
-  overflow: hidden;
-  display: flex;
-  align-items: flex-end;
-}
-
-.coffee-fill { width: 100%; background: #6d4c41; transition: height 0.5s; }
-.full { height: 85%; } .half { height: 45%; } .low { height: 15%; }
-
-/* ⌨️ BUTTON ROW ALIGNMENT */
-.button-row {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
-  width: 100%;
-}
-
+/* 🔘 BUTTON */
 button {
-  flex: 1;
   background: #d7ccc8;
   border: 2px solid #6b1405;
   border-radius: 8px;
-  padding: 10px;
+  padding: 8px;
   cursor: pointer;
-  box-shadow: 4px 4px 0px #6b1405;
-  font-weight: bold;
+  box-shadow: 3px 3px 0px #6b1405;
 }
 
-button:active { transform: translateY(2px); box-shadow: 1px 1px 0px #6b1405; }
-
-/* 📱 MOBILE RESPONSIVENESS */
-@media (max-width: 600px) {
-  .page-frame { width: 100%; height: 100%; border: none; padding: 10px; }
-  .outer-glass { border-radius: 10px; }
-  .container { width: 100%; max-height: 98%; padding: 20px; }
+button:active {
+  transform: translateY(2px);
 }
 
-.input-area input,
-.input-area button {
-  width: 100%;
+/* 🌤️ PLAN */
+.day-plan {
+  background: #efebe9;
+  border: 2px solid #6b1405;
+  border-radius: 10px;
+  padding: 8px;
+  margin: 10px 0;
 }
 
+/* 📋 TASK AREA */
+.task-section {
+  flex: 1;
+  overflow-y: auto;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* 🧾 TASK ITEM */
+li {
+  background: #fff8f0;
+  margin: 8px 3px;
+  padding: 10px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  border: 2px solid #6b1405;
+  box-shadow: 3px 3px 0px #6b1405;
+  position: relative;
+}
+
+/* ✅ CHECKBOX */
+input[type="checkbox"] {
+  margin-right: 10px;
+  transform: scale(1.2);
+}
+
+/* 📦 CONTENT */
 .task-content {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+}
+
+/* ☕ TEXT */
+.task-content b {
+  color: #6b1405;
+}
+
+.task-content span {
+  font-size: 12px;
+  color: #6b1405;
+}
+
+/* ☕ COFFEE */
+.coffee {
+  width: 22px;
+  height: 20px;
+  border: 1.5px solid #6b1405;
+  border-radius: 5px 5px 8px 8px;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  margin-left: 10px;
+  overflow: hidden;
+}
+
+/* ☕ HANDLE */
+.coffee::after {
+  content: "";
+  position: absolute;
+  right: -5px;
+  top: 5px;
+  width: 5px;
+  height: 7px;
+  border: 1.5px solid #6b1405;
+  border-left: none;
+  border-radius: 0 5px 5px 0;
+}
+
+/* ☁️ STEAM */
+.coffee::before {
+  content: "☁️";
+  position: absolute;
+  top: -6px;
+  font-size: 8px;
+  animation: steam 2s infinite;
+}
+
+/* ☕ LIQUID */
+.coffee-fill {
+  width: 100%;
+  background: #6d4c41;
+}
+
+/* ☕ LEVELS */
+.full { height: 75%; }
+.half { height: 45%; }
+.low { height: 20%; }
+
+/* 🌫️ STEAM ANIMATION */
+@keyframes steam {
+  0% { transform: translateY(2px); opacity: 0.3; }
+  50% { transform: translateY(-4px); opacity: 0.8; }
+  100% { transform: translateY(-6px); opacity: 0; }
+}
+
+/* ❌ DELETE BUTTON */
+.delete-btn {
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  background: transparent;
+  border: none;
+  font-size: 12px;
+  cursor: pointer;
+  color: #6b1405;
+}
+
+/* 📜 HISTORY */
+.history {
+  display: none;
+  margin-top: 10px;
+}
+
+.history.show {
+  display: block;
 }
