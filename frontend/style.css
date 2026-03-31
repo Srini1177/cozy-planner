@@ -109,13 +109,17 @@ ul {
 /* 🧾 TASK ITEM */
 li {
   background: #fff8f0;
-  margin: 8px 3px;
-  padding: 10px;
+  margin: 10px 0;
+  padding: 10px 12px;
   border-radius: 8px;
+
   display: flex;
   align-items: center;
+  gap: 10px;
+
   border: 2px solid #6b1405;
   box-shadow: 3px 3px 0px #6b1405;
+
   position: relative;
 }
 
@@ -130,6 +134,7 @@ input[type="checkbox"] {
   flex: 1;
   display: flex;
   flex-direction: column;
+  justify-content: center;
 }
 
 /* ☕ TEXT */
@@ -145,14 +150,20 @@ input[type="checkbox"] {
 /* ☕ COFFEE */
 .coffee {
   width: 22px;
-  height: 20px;
-  border: 1.5px solid #6b1405;
+  height: 22px;
+
+  border: 2px solid #6b1405;
   border-radius: 5px 5px 8px 8px;
+
   position: relative;
+
   display: flex;
   align-items: flex-end;
-  margin-left: 10px;
-  overflow: hidden;
+  justify-content: center;
+
+  margin-left: auto; /* 🔥 pushes it to right */
+
+  overflow: visible; /* 🔥 FIX STEAM VISIBILITY */
 }
 
 /* ☕ HANDLE */
@@ -172,8 +183,9 @@ input[type="checkbox"] {
 .coffee::before {
   content: "☁️";
   position: absolute;
-  top: -6px;
-  font-size: 8px;
+  top: -10px;
+  font-size: 10px;
+  opacity: 0.9;
   animation: steam 2s infinite;
 }
 
@@ -198,8 +210,9 @@ input[type="checkbox"] {
 /* ❌ DELETE BUTTON */
 .delete-btn {
   position: absolute;
-  right: 6px;
+  right: 8px;
   top: 6px;
+
   background: transparent;
   border: none;
   font-size: 12px;
