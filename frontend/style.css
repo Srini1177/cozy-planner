@@ -35,13 +35,14 @@ body {
 /* 📓 CONTAINER */
 .container {
   width: 420px;
-  max-height: 620px;
+  max-height: 680px;
   background: #f5ebe0;
   border: 3px solid #6b1405;
   border-radius: 20px;
   padding: 20px;
   display: flex;
   flex-direction: column;
+  gap: 10px;
   overflow: hidden;
   box-shadow: 6px 6px 0px #6b1405;
 }
@@ -50,55 +51,70 @@ body {
 h1 {
   text-align: center;
   color: #841f0e;
+  margin: 0 0 2px 0;
 }
 
 p {
   text-align: center;
   color: #481403c9;
+  margin: 0;
 }
 
-/* ✍️ INPUT */
+/* ✍️ INPUT AREA — matches reference image (stacked inputs + wide button) */
 .input-area {
   display: flex;
-  gap: 6px;
+  flex-direction: column;
+  gap: 8px;
+  background: #ece0d8;
+  border: 2px solid #6b1405;
+  border-radius: 12px;
+  padding: 10px;
 }
 
-input {
-  flex: 1;
-  padding: 8px;
-  border-radius: 8px;
+.input-area input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
   border: 2px solid #6b1405;
   background: #fff8f0;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  box-sizing: border-box;
+  color: #6b1405;
 }
 
-/* 🔘 BUTTON */
-button {
+.input-area input::placeholder {
+  color: #b09080;
+}
+
+.input-area button {
+  width: 100%;
+  padding: 10px;
   background: #d7ccc8;
   border: 2px solid #6b1405;
-  border-radius: 8px;
-  padding: 8px;
+  border-radius: 10px;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  font-size: 14px;
   cursor: pointer;
   box-shadow: 3px 3px 0px #6b1405;
+  color: #3e1007;
 }
 
-button:active {
+.input-area button:active {
   transform: translateY(2px);
-}
-
-/* 🌤️ PLAN */
-.day-plan {
-  background: #efebe9;
-  border: 2px solid #6b1405;
-  border-radius: 10px;
-  padding: 8px;
-  margin: 10px 0;
+  box-shadow: 1px 1px 0px #6b1405;
 }
 
 /* 📋 TASK AREA */
 .task-section {
   flex: 1;
   overflow-y: auto;
+  min-height: 0;
 }
+
+.task-section::-webkit-scrollbar { width: 4px; }
+.task-section::-webkit-scrollbar-thumb { background: #6b1405; border-radius: 4px; }
 
 ul {
   list-style: none;
@@ -106,126 +122,242 @@ ul {
   margin: 0;
 }
 
-/* 🧾 TASK ITEM */
+/* 🧾 TASK ITEM — clean aligned layout */
 li {
   background: #fff8f0;
-  margin: 10px 0;
-  padding: 10px 12px;
-  border-radius: 8px;
-
-  display: flex;
+  margin: 8px 0;
+  padding: 8px 10px;
+  border-radius: 10px;
+  display: grid;
+  grid-template-columns: 28px 1fr 28px 24px;
   align-items: center;
-  gap: 10px;
-
+  gap: 6px;
   border: 2px solid #6b1405;
   box-shadow: 3px 3px 0px #6b1405;
-
-  position: relative;
 }
 
-/* ✅ CHECKBOX */
-input[type="checkbox"] {
-  margin-right: 10px;
-  transform: scale(1.2);
+/* Empty state */
+li.empty-msg {
+  display: block;
+  text-align: center;
+  font-size: 13px;
+  color: #a07060;
+  border: 1px dashed #6b1405;
+  box-shadow: none;
+  background: transparent;
 }
 
-/* 📦 CONTENT */
+/* ✅ CUSTOM CHECKBOX */
+.cb-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.cb-wrap input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.cb-box {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #6b1405;
+  border-radius: 4px;
+  background: #fff8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+.cb-wrap input[type="checkbox"]:checked + .cb-box {
+  background: #6b1405;
+}
+
+.cb-wrap input[type="checkbox"]:checked + .cb-box::after {
+  content: "✓";
+  color: #fff8f0;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+/* 📦 TASK CONTENT */
 .task-content {
-  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  min-width: 0;
 }
 
-/* ☕ TEXT */
-.task-content b {
+.task-name {
+  font-weight: bold;
   color: #6b1405;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.task-content span {
-  font-size: 12px;
-  color: #6b1405;
+.task-date {
+  font-size: 11px;
+  color: #a07060;
+  margin-top: 2px;
 }
 
-/* ☕ COFFEE */
+/* ☕ COFFEE CUP */
 .coffee {
   width: 22px;
   height: 22px;
-
   border: 2px solid #6b1405;
-  border-radius: 5px 5px 8px 8px;
-
+  border-radius: 4px 4px 7px 7px;
   position: relative;
-
   display: flex;
   align-items: flex-end;
   justify-content: center;
-
-  margin-left: auto; /* 🔥 pushes it to right */
-
-  overflow: visible; /* 🔥 FIX STEAM VISIBILITY */
+  overflow: visible;
+  flex-shrink: 0;
 }
 
-/* ☕ HANDLE */
+/* Cup handle */
 .coffee::after {
   content: "";
   position: absolute;
-  right:-2px;
-  top: 5px;
+  right: -5px;
+  top: 4px;
   width: 5px;
   height: 7px;
   border: 1.5px solid #6b1405;
   border-left: none;
-  border-radius: 0 5px 5px 0;
+  border-radius: 0 4px 4px 0;
 }
 
-/* ☁️ STEAM */
+/* Steam */
 .coffee::before {
-  content: "☁️";
+  content: "〰";
   position: absolute;
-  top: -10px;
-  font-size: 10px;
-  opacity: 0.9;
-  animation: steam 2s infinite;
+  top: -13px;
+  font-size: 9px;
+  color: #b09080;
+  opacity: 0.8;
+  animation: steam 2s ease-in-out infinite;
 }
 
-/* ☕ LIQUID */
+/* Coffee fill */
 .coffee-fill {
   width: 100%;
   background: #6d4c41;
+  border-radius: 0 0 5px 5px;
 }
 
-/* ☕ LEVELS */
-.full { height: 75%; }
-.half { height: 45%; }
-.low { height: 20%; }
+.full  { height: 75%; }
+.half  { height: 45%; }
+.low   { height: 20%; }
 
-/* 🌫️ STEAM ANIMATION */
+/* Steam animation */
 @keyframes steam {
-  0% { transform: translateY(2px); opacity: 0.3; }
-  50% { transform: translateY(-4px); opacity: 0.8; }
-  100% { transform: translateY(-6px); opacity: 0; }
+  0%   { transform: translateY(0px);  opacity: 0.3; }
+  50%  { transform: translateY(-3px); opacity: 0.8; }
+  100% { transform: translateY(-6px); opacity: 0;   }
 }
 
 /* ❌ DELETE BUTTON */
 .delete-btn {
-  position: absolute;
-  right: 8px;
-  top: 6px;
-
   background: transparent;
   border: none;
-  font-size: 12px;
+  font-size: 13px;
   cursor: pointer;
   color: #6b1405;
+  padding: 0;
+  line-height: 1;
+  flex-shrink: 0;
 }
 
-/* 📜 HISTORY */
+.delete-btn:hover { color: #c0392b; }
+
+/* 🔘 BOTTOM BUTTONS */
+.button-row {
+  display: flex;
+  gap: 8px;
+}
+
+.button-row button {
+  flex: 1;
+  padding: 8px;
+  background: #d7ccc8;
+  border: 2px solid #6b1405;
+  border-radius: 8px;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  cursor: pointer;
+  box-shadow: 3px 3px 0px #6b1405;
+  color: #3e1007;
+}
+
+.button-row button:active {
+  transform: translateY(2px);
+  box-shadow: 1px 1px 0px #6b1405;
+}
+
+/* 📜 HISTORY SECTION */
 .history {
   display: none;
-  margin-top: 10px;
+  border-top: 2px dashed #6b1405;
+  padding-top: 8px;
+  max-height: 150px;
+  overflow-y: auto;
 }
 
 .history.show {
   display: block;
+}
+
+.history-title {
+  font-size: 12px;
+  font-weight: bold;
+  color: #6b1405;
+  margin: 0 0 6px 0;
+  text-align: left;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  margin: 4px 0;
+  background: #efebe9;
+  border-radius: 6px;
+  border: 1px solid #c4a89a;
+}
+
+.history-check {
+  color: #4caf50;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.history-task {
+  flex: 1;
+  color: #6b1405;
+  font-size: 13px;
+  text-decoration: line-through;
+  opacity: 0.75;
+}
+
+.empty-msg {
+  font-size: 12px;
+  color: #a07060;
+  text-align: center;
+  padding: 6px 0;
+}
+
+/* 🔐 LOGIN CARD */
+.login-card {
+  max-width: 380px;
+  width: 100%;
 }
