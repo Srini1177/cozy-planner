@@ -170,7 +170,7 @@ input[type="checkbox"] {
 .coffee::after {
   content: "";
   position: absolute;
-  right: -5px;
+  right:-2px;
   top: 5px;
   width: 5px;
   height: 7px;
