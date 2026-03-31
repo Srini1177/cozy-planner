@@ -3,36 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cozy Planner ☕</title>
+  <title>COZY.EXE ☕</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="page-frame">
     <div class="outer-glass">
       <div class="container">
-        <h1>☕ Cozy Planner</h1>
+
+        <h1>☕ COZY.EXE</h1>
         <p id="welcomeMsg"></p>
 
-        <!-- INPUT AREA matching the reference image -->
         <div class="input-area">
           <input id="taskInput" placeholder="what's brewing?">
           <input id="deadlineInput" type="date">
-          <button onclick="addTask()">Add</button>
+          <button onclick="addTask()">[ ADD TASK ]</button>
         </div>
 
-        <!-- TASK LIST -->
         <div class="task-section">
           <ul id="taskList"></ul>
         </div>
 
-        <!-- BOTTOM BUTTONS & HISTORY -->
         <div class="button-row">
-          <button onclick="toggleHistory()" class="history-btn">📜 History</button>
-          <button onclick="logout()" class="logout-btn">Logout</button>
+          <button class="history-btn" onclick="toggleHistory()">▼ HISTORY</button>
+          <button class="logout-btn"  onclick="logout()">⏻ LOGOUT</button>
         </div>
 
         <div id="historySection" class="history">
-          <p class="history-title">Finished Brews ✔</p>
+          <p class="history-title">Finished Brews</p>
           <div id="historyList"></div>
         </div>
 
